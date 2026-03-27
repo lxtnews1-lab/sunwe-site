@@ -45,18 +45,69 @@ const productSeries = [
   },
 ];
 
-const title = 'JINAN SUNWE VEHICLE — Your premier partner for special-purpose trucks. Factory direct, professional customization, global shipping.';
+const title = 'Special-Purpose Trucks & Semi Trailers Exporter | Jinan Sunwe Vehicle';
 const description =
-  'JINAN SUNWE VEHICLE — Your premier partner for special-purpose trucks. Factory direct, professional customization, global shipping.';
+  'Professional exporter of special-purpose trucks, dump trucks, concrete mixers, crane trucks, and semi-trailers. 13+ years experience, factory direct, global shipping. Contact us for quote!';
+
+// Website Schema
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Jinan Sunwe Vehicle Co., Ltd.",
+  "url": "https://sunwevehicle.com",
+  "description": description,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://sunwevehicle.com/products?search={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+};
+
+// LocalBusiness Schema
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Jinan Sunwe Vehicle Co., Ltd.",
+  "image": "http://sunwevehicle.com/wp-content/uploads/2026/03/about01.jpg",
+  "@id": "https://sunwevehicle.com",
+  "url": "https://sunwevehicle.com",
+  "telephone": "+86-138-6416-2003",
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "E39, Building 3, Aosheng Mansion, No. 1166 Xinluo Street, Shunhua Road Sub-district",
+    "addressLocality": "Jinan",
+    "addressRegion": "Shandong",
+    "postalCode": "250101",
+    "addressCountry": "CN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 36.6736,
+    "longitude": 117.1342
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "opens": "08:00",
+    "closes": "18:00"
+  },
+  "sameAs": [
+    "https://www.youtube.com/@sunwevehicle"
+  ]
+};
+
+// Combine schemas
+const combinedSchema = [websiteSchema, localBusinessSchema];
 ---
 
-<BaseLayout title={title} description={description} canonicalPath="/" heroImage={heroImage}>
+<BaseLayout title={title} description={description} canonicalPath="/" heroImage={heroImage} schema={combinedSchema}>
   <div class="page">
     <Nav />
     <main>
-      <section class="home-hero">
+      <section class="home-hero" aria-label="Hero Banner">
         <div class="home-hero__bg">
-          <img src={heroImage} alt="" width="1920" height="1080" fetchpriority="high" />
+          <img src={heroImage} alt="Sunwe Vehicle - Heavy duty trucks and semi trailers showroom" width="1920" height="1080" fetchpriority="high" />
           <div class="home-hero__overlay"></div>
         </div>
         <div class="container home-hero__content">
@@ -180,8 +231,8 @@ const description =
           </div>
           <div class="home-series">
             {productSeries.map((s) => (
-              <a class="home-series__card" href="/products">
-                <img src={s.image} alt="" loading="lazy" />
+              <a class="home-series__card" href="/products" aria-label={`Browse ${s.title}`}>
+                <img src={s.image} alt={`${s.title} - ${s.description}`} loading="lazy" width="600" height="400" />
                 <div class="home-series__grad"></div>
                 <div class="home-series__body">
                   <h3>{s.title}</h3>

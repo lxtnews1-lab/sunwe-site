@@ -78,15 +78,70 @@ const wa = import.meta.env.WA_NUMBER;
 const waText = `Hello, I'm interested in ${product.name}. Please send me more details.`;
 const waHref = `https://wa.me/${wa}?text=${encodeURIComponent(waText)}`;
 
-const title = product.name;
+const title = `${product.name} | Special Truck for Export | Sunwe Vehicle`;
 const description = product.short_description
   ? product.short_description.replace(/<[^>]+>/g, '').slice(0, 160)
-  : `Details for ${product.name} — Sunwe Vehicle.`;
+  : `Buy ${product.name} from Sunwe Vehicle. Factory direct, professional customization, global shipping. Contact us for quote!`;
+
+const ogImage = product.images[0]?.src || 'http://sunwevehicle.com/wp-content/uploads/2026/03/hero-scaled.png';
+
+// Product Schema
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": product.name,
+  "image": product.images.map(img => img.src),
+  "description": description,
+  "brand": {
+    "@type": "Brand",
+    "name": "Sunwe Vehicle"
+  },
+  "manufacturer": {
+    "@type": "Organization",
+    "name": "Jinan Sunwe Vehicle Co., Ltd."
+  },
+  "offers": {
+    "@type": "Offer",
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "Organization",
+      "name": "Jinan Sunwe Vehicle Co., Ltd."
+    }
+  }
+};
+
+// Breadcrumb Schema
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://sunwevehicle.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Products",
+      "item": "https://sunwevehicle.com/products"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": product.name,
+      "item": `https://sunwevehicle.com/products/${product.id}`
+    }
+  ]
+};
+
+const combinedSchema = [productSchema, breadcrumbSchema];
 
 const stripTags = (html: string) => html.replace(/<[^>]+>/g, '').trim();
 ---
 
-<BaseLayout title={title} description={description} canonicalPath={`/products/${product.id}`}>
+<BaseLayout title={title} description={description} canonicalPath={`/products/${product.id}`} ogImage={ogImage} schema={combinedSchema}>
   <div class="page">
     <Nav />
     <main class="main">

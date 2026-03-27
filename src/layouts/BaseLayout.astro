@@ -6,30 +6,106 @@ interface Props {
   description: string;
   canonicalPath?: string;
   heroImage?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  schema?: object;
 }
 
-const { title, description, canonicalPath, heroImage } = Astro.props;
+const { 
+  title, 
+  description, 
+  canonicalPath, 
+  heroImage, 
+  ogImage = 'http://sunwevehicle.com/wp-content/uploads/2026/03/hero-scaled.png',
+  noindex = false,
+  schema
+} = Astro.props;
+
 const site = Astro.site?.toString().replace(/\/$/, '') ?? 'https://sunwevehicle.com';
 const canonical = canonicalPath ? `${site}${canonicalPath.startsWith('/') ? '' : '/'}${canonicalPath}` : site;
 const fullTitle = title.includes('Sunwe Vehicle') ? title : `${title} | Sunwe Vehicle`;
+
+// Default Organization Schema
+const defaultSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Jinan Sunwe Vehicle Co., Ltd.",
+  "alternateName": "Sunwe Vehicle",
+  "url": site,
+  "logo": `${site}/brand/logo-nav.png`,
+  "description": "Professional exporter specializing in special trucks and semi trailers with over 13 years of industry experience.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "E39, Building 3, Aosheng Mansion, No. 1166 Xinluo Street, Shunhua Road Sub-district",
+    "addressLocality": "Jinan",
+    "addressRegion": "Shandong",
+    "addressCountry": "CN"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "Sales",
+    "availableLanguage": ["English", "Chinese", "Spanish", "Arabic", "French", "Russian"]
+  },
+  "sameAs": [
+    "https://www.youtube.com/@sunwevehicle"
+  ]
+};
+
+const finalSchema = schema || defaultSchema;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#1a1f2e" />
+    
+    <!-- Primary Meta Tags -->
     <title>{fullTitle}</title>
+    <meta name="title" content={fullTitle} />
     <meta name="description" content={description} />
+    <meta name="keywords" content="special trucks, semi trailers, heavy duty trucks, dump trucks, tractor trucks, concrete mixer trucks, crane trucks, fuel tanker trucks, garbage trucks, mining trucks, truck exporter, China trucks, SINOTRUK, HOWO" />
+    <meta name="author" content="Jinan Sunwe Vehicle Co., Ltd." />
+    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
+    
+    <!-- Canonical URL -->
     <link rel="canonical" href={canonical} />
-    <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
+    
+    <!-- Alternate Languages -->
+    <link rel="alternate" hreflang="en" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={fullTitle} />
-    <meta name="twitter:description" content={description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Sunwe Vehicle" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonical} />
+    <meta property="twitter:title" content={fullTitle} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={ogImage} />
+    
+    <!-- Mobile App -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Sunwe Vehicle" />
+    <meta name="application-name" content="Sunwe Vehicle" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/brand/logo.png" />
+    <link rel="apple-touch-icon" href="/brand/logo.png" />
     
     <!-- DNS Prefetch and Preconnect -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
@@ -55,9 +131,11 @@ const fullTitle = title.includes('Sunwe Vehicle') ? title : `${title} | Sunwe Ve
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     </noscript>
     
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(finalSchema)} />
+    
     <!-- Critical CSS Inline -->
     <style is:inline>
-      /* Critical CSS for above-the-fold content */
       html { scroll-behavior: smooth; }
       body { 
         margin: 0; 
@@ -65,55 +143,80 @@ const fullTitle = title.includes('Sunwe Vehicle') ? title : `${title} | Sunwe Ve
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
       }
-      img { max-width: 100%; height: auto; display: block; }
-      
-      /* Prevent FOUC */
+      img { 
+        max-width: 100%; 
+        height: auto; 
+        display: block;
+      }
       .sw-nav { visibility: visible !important; }
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        background: #ff4438;
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        z-index: 100;
+      }
+      .skip-link:focus { top: 0; }
+      .goog-te-banner-frame { display: none !important; }
+      body { top: 0 !important; }
+      .goog-te-menu-frame { display: none !important; }
     </style>
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div id="google_translate_element" style="display: none;"></div>
+    
     <slot />
+    
+    <!-- Google Translate with direct function -->
+    <script is:inline>
+      // Global translate function
+      window.changeGoogleTranslateLanguage = function(langCode) {
+        if (!langCode) return;
+        
+        // Try to find and update the Google Translate combo box
+        var combo = document.querySelector('.goog-te-combo');
+        if (combo) {
+          combo.value = langCode;
+          combo.dispatchEvent(new Event('change'));
+          return;
+        }
+        
+        // Fallback: try again after delay
+        setTimeout(function() {
+          var comboRetry = document.querySelector('.goog-te-combo');
+          if (comboRetry) {
+            comboRetry.value = langCode;
+            comboRetry.dispatchEvent(new Event('change'));
+          }
+        }, 500);
+      };
+      
+      // Initialize Google Translate
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'en,zh-CN,es,ar,fr,ru',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+        }, 'google_translate_element');
+      }
+    </script>
+    <script is:inline src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     
     <!-- Disable right-click on images -->
     <script is:inline>
       (function() {
-        // Disable right-click on images
         document.addEventListener('contextmenu', function(e) {
           if (e.target.tagName === 'IMG') {
             e.preventDefault();
             return false;
           }
         });
-        
-        // Disable drag on images
-        document.addEventListener('dragstart', function(e) {
-          if (e.target.tagName === 'IMG') {
-            e.preventDefault();
-            return false;
-          }
-        });
-        
-        // Disable copy on images
-        document.addEventListener('copy', function(e) {
-          if (e.target.tagName === 'IMG' || window.getSelection().toString() === '') {
-            e.preventDefault();
-            return false;
-          }
-        });
       })();
-    </script>
-    
-    <!-- Lazy load non-critical scripts -->
-    <script>
-      // Lazy load images with native lazy loading
-      if ('loading' in HTMLImageElement.prototype) {
-        const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-        lazyImages.forEach(img => {
-          if (img.dataset.src) {
-            img.src = img.dataset.src;
-          }
-        });
-      }
     </script>
   </body>
 </html>

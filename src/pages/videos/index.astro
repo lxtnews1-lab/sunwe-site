@@ -8,8 +8,57 @@ import { getAllPlaylistsWithVideos } from '../../lib/youtube';
 
 const data = await getAllPlaylistsWithVideos().catch(() => [] as Awaited<ReturnType<typeof getAllPlaylistsWithVideos>>);
 
-const title = 'Videos';
-const description = 'YouTube playlists: factory tours, model walkarounds, and customer references from Sunwe Vehicle.';
+const title = 'Factory Tour Videos | Truck Manufacturing Process | Sunwe Vehicle';
+const description = 'Watch Sunwe Vehicle factory tours, truck manufacturing process, and product demonstrations. See our quality control and assembly lines in action.';
+
+// VideoGallery Schema
+const videoGallerySchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoGallery",
+  "name": "Sunwe Vehicle Video Gallery",
+  "description": description,
+  "url": "https://sunwevehicle.com/videos"
+};
+
+// VideoObject Schema for each video
+const videoSchemas = data.flatMap((playlist) => 
+  playlist.videos.map((video, index) => ({
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": video.title,
+    "description": video.title,
+    "thumbnailUrl": video.thumbnailUrl,
+    "uploadDate": video.publishedAt,
+    "embedUrl": `https://www.youtube.com/embed/${video.videoId}`,
+    "contentUrl": `https://www.youtube.com/watch?v=${video.videoId}`,
+    "author": {
+      "@type": "Organization",
+      "name": "Sunwe Vehicle"
+    }
+  }))
+);
+
+// Breadcrumb Schema
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://sunwevehicle.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Videos",
+      "item": "https://sunwevehicle.com/videos"
+    }
+  ]
+};
+
+const combinedSchema = [videoGallerySchema, breadcrumbSchema, ...videoSchemas];
 
 const tabCss = data
   .map(
@@ -19,14 +68,13 @@ const tabCss = data
   .join('');
 ---
 
-<BaseLayout title={title} description={description} canonicalPath="/videos">
+<BaseLayout title={title} description={description} canonicalPath="/videos" schema={combinedSchema}>
   <div class="page">
     <Nav />
     <main class="main">
       <div class="container">
         <header class="page-head">
           <h1>Videos</h1>
-          <p class="muted">Switch between playlists using the tabs — powered by the YouTube Data API.</p>
         </header>
 
         {data.length === 0 ? (

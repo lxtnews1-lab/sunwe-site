@@ -6,12 +6,62 @@ import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 
 const web3Key = import.meta.env.WEB3FORMS_KEY;
 
-const title = 'Contact Us';
+const title = 'Contact Us | Get Quote for Trucks & Trailers | Sunwe Vehicle';
 const description =
-  'Send an inquiry to Sunwe Vehicle — WhatsApp, email, or this form. We respond within 24 hours.';
+  'Contact Sunwe Vehicle for truck and trailer inquiries. WhatsApp, email, or fill out our form. Factory direct pricing, global shipping. Response within 24 hours!';
+
+// ContactPage Schema
+const contactSchema = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact Sunwe Vehicle",
+  "description": description,
+  "url": "https://sunwevehicle.com/contact",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "Jinan Sunwe Vehicle Co., Ltd.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "E39, Building 3, Aosheng Mansion, No. 1166 Xinluo Street, Shunhua Road Sub-district",
+      "addressLocality": "Jinan",
+      "addressRegion": "Shandong",
+      "postalCode": "250101",
+      "addressCountry": "CN"
+    },
+    "telephone": "+86-138-6416-2003",
+    "email": "sales@sunwevehicle.com",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Sales",
+      "availableLanguage": ["English", "Chinese", "Spanish", "Arabic", "French", "Russian"]
+    }
+  }
+};
+
+// Breadcrumb Schema
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://sunwevehicle.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Contact Us",
+      "item": "https://sunwevehicle.com/contact"
+    }
+  ]
+};
+
+const combinedSchema = [contactSchema, breadcrumbSchema];
 ---
 
-<BaseLayout title={title} description={description} canonicalPath="/contact">
+<BaseLayout title={title} description={description} canonicalPath="/contact" schema={combinedSchema}>
   <div class="page">
     <Nav />
     <main class="main">

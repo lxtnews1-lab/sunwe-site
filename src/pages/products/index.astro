@@ -9,11 +9,45 @@ import { getAllProducts, getCategories } from '../../lib/woocommerce';
 const categories = await getCategories().catch(() => []);
 const products = await getAllProducts().catch(() => []);
 
-const title = 'Products';
-const description = 'Browse Sunwe Vehicle heavy-duty trucks and special vehicles. Request a quote by WhatsApp or contact form — no online pricing.';
+const title = 'Special Trucks & Semi Trailers Catalog | Sunwe Vehicle';
+const description = 'Browse our catalog of heavy-duty trucks, dump trucks, concrete mixers, crane trucks, fuel tankers, and semi-trailers. Factory direct pricing, global shipping. Get your quote today!';
+
+// ItemList Schema for products
+const itemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": products.map((product, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "url": `https://sunwevehicle.com/products/${product.id}`,
+    "name": product.name
+  }))
+};
+
+// Breadcrumb Schema
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://sunwevehicle.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Products",
+      "item": "https://sunwevehicle.com/products"
+    }
+  ]
+};
+
+const combinedSchema = [itemListSchema, breadcrumbSchema];
 ---
 
-<BaseLayout title={title} description={description} canonicalPath="/products">
+<BaseLayout title={title} description={description} canonicalPath="/products" schema={combinedSchema}>
   <div class="page">
     <Nav />
     <main class="main">

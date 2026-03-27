@@ -41,8 +41,8 @@ function getCategoryGroup(name: string): 'trucks' | 'trailers' | 'engines' | 'ot
   }
   
   // Priority 4: Truck-related categories (but NOT trailer-related)
-  const truckKeywords = /dump|tractor|cargo|concrete|mixer|pump|crane|garbage|wrecker|fire|mining|aerial|sprinkler|sewer|suction|sweeper|led|advertising|bulk|cement|livestock|animal|bulk$/i;
-  const trailerKeywords = /flatbed|lowboy|container|fence|van|skeleton|tipper|tanker|reefer|refrigerated|lowbed|cargo trailer|tanker trailer|oil|fuel|lpg|lng|chemical|grain|silo/i;
+  const truckKeywords = /dump|tractor|cargo|concrete|mixer|pump|crane|garbage|wrecker|fire|mining|aerial|sprinkler|sewer|suction|sweeper|led|advertising|bulk|cement|livestock|animal|van|pickup|pick-up|bulk$/i;
+  const trailerKeywords = /flatbed|lowboy|container|fence|skeleton|tipper|tanker|reefer|refrigerated|lowbed|cargo trailer|tanker trailer|oil|fuel|lpg|lng|chemical|grain|silo/i;
   
   if (truckKeywords.test(lower)) {
     return 'trucks';
@@ -240,20 +240,16 @@ const contactActive =
         <span>{waDisplay || 'WhatsApp'}</span>
       </a>
       
+      <!-- Google Translate Language Switcher -->
       <div class="sw-nav__lang">
-        <button type="button" class="sw-nav__lang-btn" id="lang-toggle" aria-expanded="false" aria-controls="lang-dropdown">
-          <span class="sw-nav__lang-flag">🇬🇧</span>
-          <span class="sw-nav__lang-code">EN</span>
-          <span class="sw-nav__lang-arrow" aria-hidden="true">▾</span>
-        </button>
-        <ul class="sw-nav__lang-dropdown" id="lang-dropdown" hidden>
-          <li><a href="/" class="sw-nav__lang-option is-active" data-lang="en"><span class="sw-nav__lang-flag">🇬🇧</span> English</a></li>
-          <li><a href="/zh" class="sw-nav__lang-option" data-lang="zh"><span class="sw-nav__lang-flag">🇨🇳</span> 中文</a></li>
-          <li><a href="/es" class="sw-nav__lang-option" data-lang="es"><span class="sw-nav__lang-flag">🇪🇸</span> Español</a></li>
-          <li><a href="/ar" class="sw-nav__lang-option" data-lang="ar"><span class="sw-nav__lang-flag">🇸🇦</span> العربية</a></li>
-          <li><a href="/fr" class="sw-nav__lang-option" data-lang="fr"><span class="sw-nav__lang-flag">🇫🇷</span> Français</a></li>
-          <li><a href="/ru" class="sw-nav__lang-option" data-lang="ru"><span class="sw-nav__lang-flag">🇷🇺</span> Русский</a></li>
-        </ul>
+        <select class="sw-nav__lang-select" id="google-lang-selector" aria-label="Select language">
+          <option value="en" selected>🇬🇧 EN</option>
+          <option value="zh-CN">🇨🇳 中文</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="ar">🇸🇦 AR</option>
+          <option value="fr">🇫🇷 FR</option>
+          <option value="ru">🇷🇺 RU</option>
+        </select>
       </div>
       
       <a class="btn btn--sw-gradient sw-nav__quote" href="/contact-us">Get Quote</a>
@@ -291,14 +287,14 @@ const contactActive =
       <!-- Mobile Language Switcher -->
       <div class="sw-nav__mobile-lang">
         <div class="sw-nav__mobile-lang-title">🌐 Language</div>
-        <div class="sw-nav__mobile-lang-options">
-          <a href="/" class="sw-nav__mobile-lang-option is-active">🇬🇧 EN</a>
-          <a href="/zh" class="sw-nav__mobile-lang-option">🇨🇳 中文</a>
-          <a href="/es" class="sw-nav__mobile-lang-option">🇪🇸 ES</a>
-          <a href="/ar" class="sw-nav__mobile-lang-option">🇸🇦 AR</a>
-          <a href="/fr" class="sw-nav__mobile-lang-option">🇫🇷 FR</a>
-          <a href="/ru" class="sw-nav__mobile-lang-option">🇷🇺 RU</a>
-        </div>
+        <select class="sw-nav__mobile-lang-select" id="google-lang-selector-mobile" aria-label="Select language">
+          <option value="en" selected>🇬🇧 English</option>
+          <option value="zh-CN">🇨🇳 中文</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="ar">🇸🇦 العربية</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="ru">🇷🇺 Русский</option>
+        </select>
       </div>
       
       <a class="btn btn--sw-gradient sw-nav__mobile-cta" href="/contact-us">Get Quote</a>
@@ -327,31 +323,38 @@ const contactActive =
     });
   })();
 
-  // Language switcher
+  // Language switcher with Google Translate
   (function () {
-    var langBtn = document.getElementById('lang-toggle');
-    var langDropdown = document.getElementById('lang-dropdown');
-    if (!langBtn || !langDropdown) return;
-
-    function toggleLangDropdown(e) {
-      e.stopPropagation();
-      var isOpen = !langDropdown.hidden;
-      langDropdown.hidden = isOpen;
-      langBtn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    var desktopSelect = document.getElementById('google-lang-selector');
+    var mobileSelect = document.getElementById('google-lang-selector-mobile');
+    
+    function handleLanguageChange(select) {
+      var lang = select.value;
+      
+      // Call the global translate function
+      if (typeof window.changeGoogleTranslateLanguage === 'function') {
+        window.changeGoogleTranslateLanguage(lang);
+      }
+      
+      // Sync the other selector
+      if (select === desktopSelect && mobileSelect) {
+        mobileSelect.value = lang;
+      } else if (select === mobileSelect && desktopSelect) {
+        desktopSelect.value = lang;
+      }
     }
-
-    langBtn.addEventListener('click', toggleLangDropdown);
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function () {
-      langDropdown.hidden = true;
-      langBtn.setAttribute('aria-expanded', 'false');
-    });
-
-    // Prevent closing when clicking inside dropdown
-    langDropdown.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
+    
+    if (desktopSelect) {
+      desktopSelect.addEventListener('change', function() {
+        handleLanguageChange(this);
+      });
+    }
+    
+    if (mobileSelect) {
+      mobileSelect.addEventListener('change', function() {
+        handleLanguageChange(this);
+      });
+    }
   })();
 </script>
 
@@ -472,9 +475,11 @@ const contactActive =
     border-radius: var(--radius-lg);
     padding: var(--space-6);
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-6);
     box-shadow: var(--shadow-lg);
+    max-height: 80vh;
+    overflow-y: auto;
   }
 
   .sw-nav__mega-title {
@@ -535,90 +540,37 @@ const contactActive =
     position: relative;
   }
 
-  .sw-nav__lang-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.6rem;
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+  .sw-nav__lang-select {
+    appearance: none;
+    -webkit-appearance: none;
     background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-md);
     color: #fff;
+    cursor: pointer;
     font-size: var(--text-xs);
     font-weight: var(--font-semibold);
-    cursor: pointer;
+    padding: 0.4rem 1.8rem 0.4rem 0.6rem;
     transition: background 0.15s ease, border-color 0.15s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
   }
 
-  .sw-nav__lang-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+  .sw-nav__lang-select:hover {
+    background-color: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.25);
   }
 
-  .sw-nav__lang-flag {
-    font-size: 0.9rem;
+  .sw-nav__lang-select:focus {
+    outline: none;
+    border-color: var(--sw-accent);
   }
 
-  .sw-nav__lang-code {
-    display: none;
-  }
-
-  @media (min-width: 1100px) {
-    .sw-nav__lang-code {
-      display: inline;
-    }
-  }
-
-  .sw-nav__lang-arrow {
-    font-size: 0.6rem;
-    opacity: 0.7;
-    margin-left: 0.1rem;
-  }
-
-  .sw-nav__lang-dropdown {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    right: 0;
-    min-width: 160px;
-    background: var(--sw-panel);
-    border: 1px solid var(--sw-border);
-    border-radius: var(--radius-lg);
-    padding: 0.5rem;
-    box-shadow: var(--shadow-lg);
-    list-style: none;
-    z-index: 70;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-6px);
-    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
-  }
-
-  .sw-nav__lang-dropdown:not([hidden]) {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  .sw-nav__lang-option {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--radius-sm);
-    font-size: var(--text-sm);
-    color: #d1d5db;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .sw-nav__lang-option:hover {
-    background: rgba(255, 255, 255, 0.08);
+  .sw-nav__lang-select option {
+    background: var(--sw-shell);
     color: #fff;
-  }
-
-  .sw-nav__lang-option.is-active {
-    background: rgba(255, 68, 56, 0.15);
-    color: var(--sw-accent);
+    padding: 0.5rem;
   }
 
   @media (max-width: 640px) {
@@ -706,12 +658,19 @@ const contactActive =
   }
 
   .sw-nav__mobile-mega {
-    padding: 0 0.5rem 0.75rem 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    max-height: 50vh;
+    padding: 0.5rem 0.75rem 1rem 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    max-height: 55vh;
     overflow: auto;
+  }
+
+  @media (max-width: 480px) {
+    .sw-nav__mobile-mega {
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+    }
   }
 
   .sw-nav__mobile-cat {
@@ -764,30 +723,38 @@ const contactActive =
     letter-spacing: 0.05em;
   }
 
-  .sw-nav__mobile-lang-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-2);
-  }
-
-  .sw-nav__mobile-lang-option {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.3rem;
-    padding: 0.5rem 0.25rem;
-    border-radius: var(--radius-md);
+  .sw-nav__mobile-lang-select {
+    appearance: none;
+    -webkit-appearance: none;
     background: rgba(255, 255, 255, 0.05);
-    font-size: var(--text-sm);
-    color: #d1d5db;
-    text-decoration: none;
-    transition: all 0.15s ease;
+    border: 1px solid var(--sw-border);
+    border-radius: var(--radius-md);
+    color: #fff;
+    cursor: pointer;
+    font-size: var(--text-base);
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    width: 100%;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
   }
 
-  .sw-nav__mobile-lang-option:hover,
-  .sw-nav__mobile-lang-option.is-active {
-    background: rgba(255, 68, 56, 0.2);
-    color: var(--sw-accent);
+  .sw-nav__mobile-lang-select:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .sw-nav__mobile-lang-select:focus {
+    outline: none;
+    border-color: var(--sw-accent);
+  }
+
+  .sw-nav__mobile-lang-select option {
+    background: var(--sw-shell);
+    color: #fff;
+    padding: 0.75rem;
+    font-size: var(--text-base);
   }
 
   @media (min-width: 640px) {

@@ -4,13 +4,59 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 
-const title = 'About SUNWE';
+const title = 'About Us | 13+ Years Truck Export Experience | Sunwe Vehicle';
 const description =
-  'Jinan Sunwe Vehicle Co., Ltd. is a professional exporter specializing in special trucks and semi trailers with over 13 years of industry experience.';
+  'Learn about Jinan Sunwe Vehicle Co., Ltd. - professional exporter of special trucks and semi-trailers since 2011. Factory direct, ISO certified, serving 50+ countries. Contact us!';
+
+// AboutPage Schema
+const aboutSchema = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Sunwe Vehicle",
+  "description": description,
+  "url": "https://sunwevehicle.com/about-us",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "Jinan Sunwe Vehicle Co., Ltd.",
+    "description": "Professional exporter specializing in special trucks and semi trailers with over 13 years of industry experience.",
+    "foundingDate": "2011",
+    "numberOfEmployees": {
+      "@type": "QuantitativeValue",
+      "value": "100-500"
+    },
+    "areaServed": {
+      "@type": "Place",
+      "name": "Global"
+    }
+  }
+};
+
+// Breadcrumb Schema
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://sunwevehicle.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "About Us",
+      "item": "https://sunwevehicle.com/about-us"
+    }
+  ]
+};
+
+const combinedSchema = [aboutSchema, breadcrumbSchema];
+
 const factoryImg =
   'http://sunwevehicle.com/wp-content/uploads/2026/03/about01.jpg';
 const truckImg =
-  'http://sunwevehicle.com/wp-content/uploads/2026/03/停车场.png';
+  'http://sunwevehicle.com/wp-content/uploads/2026/03/about01.jpg';
 
 const workshops = [
   {
@@ -60,7 +106,7 @@ const why = [
 ];
 ---
 
-<BaseLayout title={title} description={description} canonicalPath="/about-us">
+<BaseLayout title={title} description={description} canonicalPath="/about-us" schema={combinedSchema}>
   <div class="page">
     <Nav />
     <main>
