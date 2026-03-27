@@ -1,0 +1,634 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import ProductCard from '../components/ProductCard.astro';
+import BlogCard from '../components/BlogCard.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import { getProducts } from '../lib/woocommerce';
+import { getPosts } from '../lib/wordpress';
+import { getPlaylists, getPlaylistVideos } from '../lib/youtube';
+
+const products = await getProducts(6).catch(() => []);
+const posts = await getPosts(3).catch(() => []);
+
+const playlists = getPlaylists();
+const firstPlaylistId = playlists[0]?.id;
+let previewVideos: Awaited<ReturnType<typeof getPlaylistVideos>> = [];
+if (firstPlaylistId) {
+  previewVideos = await getPlaylistVideos(firstPlaylistId, 3).catch(() => []);
+}
+
+const heroImage =
+  'http://sunwevehicle.com/wp-content/uploads/2026/03/hero-scaled.png';
+
+const embedVideoId = previewVideos[0]?.videoId;
+
+const productSeries = [
+  {
+    title: 'Truck Series',
+    description: 'Dump trucks, Tractors, Mixer trucks, Special vehicles',
+    image:
+      'http://sunwevehicle.com/wp-content/uploads/2026/03/94E5862012-scaled.jpg',
+  },
+  {
+    title: 'Engine Products',
+    description: 'Power systems with original factory quality guarantee',
+    image:
+      'http://sunwevehicle.com/wp-content/uploads/2026/03/微信图片_20260323232500_38_183.jpg',
+  },
+  {
+    title: 'Semi-Trailer Series',
+    description: 'Multiple specifications to meet various transport needs',
+    image:
+      'http://sunwevehicle.com/wp-content/uploads/2026/03/trailer-scaled.jpg',
+  },
+];
+
+const title = 'JINAN SUNWE VEHICLE — Your premier partner for special-purpose trucks. Factory direct, professional customization, global shipping.';
+const description =
+  'JINAN SUNWE VEHICLE — Your premier partner for special-purpose trucks. Factory direct, professional customization, global shipping.';
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/" heroImage={heroImage}>
+  <div class="page">
+    <Nav />
+    <main>
+      <section class="home-hero">
+        <div class="home-hero__bg">
+          <img src={heroImage} alt="" width="1920" height="1080" fetchpriority="high" />
+          <div class="home-hero__overlay"></div>
+        </div>
+        <div class="container home-hero__content">
+          <p class="home-hero__eyebrow">
+            <span aria-hidden="true">⚡</span> PROFESSIONAL EXPORTER OF SPECIAL-PURPOSE TRUCKS
+          </p>
+          <h1 class="home-hero__title">
+            <span class="home-hero__accent">One-stop</span>
+            <span class="home-hero__line-white">Truck</span>
+            <span class="home-hero__line-white">Business</span>
+            <span class="home-hero__line-white">Solution</span>
+          </h1>
+          <p class="home-hero__lead">
+            JINAN SUNWE VEHICLE — Your premier partner for special-purpose trucks. Factory direct, professional customization, global shipping.
+          </p>
+          <div class="home-hero__actions">
+            <a class="btn btn--sw-gradient" href="/contact-us">Get a Quote</a>
+            <a class="btn btn--secondary" href="/products">Explore Products</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="home-section bg-sw-gray">
+        <div class="container">
+          <div class="home-section__head">
+            <div>
+              <p class="home-kicker"><span aria-hidden="true">🚚</span> FEATURED TRUCKS</p>
+              <h2 class="home-h2">Popular Models</h2>
+            </div>
+            <a class="home-link" href="/products">
+              View Full Catalog
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          {products.length === 0 ? (
+            <p class="muted">Loading products from your store…</p>
+          ) : (
+            <div class="grid-cards">{products.map((p) => <ProductCard product={p} />)}</div>
+          )}
+        </div>
+      </section>
+
+      <section class="home-section bg-sw-gray">
+        <div class="container home-split">
+          <div>
+            <p class="home-kicker"><span aria-hidden="true">🛡</span> ABOUT SUNWE VEHICLE</p>
+            <h2 class="home-h2">Your Trusted Partner for Special-Purpose Trucks & Semi Trailers</h2>
+            <p class="home-prose">
+              Jinan Sunwe Vehicle Co., Ltd. is located in Jinan city. A professional exporter specializing in special trucks and semi trailers. Our trucks lineup includes truck-mounted cranes, refrigerated trucks, water sprinkler trucks, sewer suction trucks, fuel tankers, self loading mixers, concrete pump trucks, and pump mixer integrated vehicles.
+            </p>
+            <p class="home-prose">
+              Our semi-trailer lineup includes fuel tanker semi trailers, low bed semi trailers, container semi trailers, refrigerated semi trailers, dump semi trailers, powder material transport trailer and so on.
+            </p>
+            <p class="home-prose">
+              With a professional team over 13 years of industry experience, we ensure smooth communication and accurate confirmation of technical requirements throughout the entire process from design to delivery. We are committed to providing high-quality products and reliable service to meet the diverse needs of global customers.
+            </p>
+            <div class="home-stats">
+              <div class="home-stat">
+                <div class="home-stat__num">13+</div>
+                <div class="home-stat__lbl">Years Experience</div>
+              </div>
+              <div class="home-stat">
+                <div class="home-stat__num">5000+</div>
+                <div class="home-stat__lbl">Units Annually</div>
+              </div>
+              <div class="home-stat">
+                <div class="home-stat__num">50+</div>
+                <div class="home-stat__lbl">Countries Served</div>
+              </div>
+              <div class="home-stat">
+                <div class="home-stat__num">98%</div>
+                <div class="home-stat__lbl">Customer Satisfaction</div>
+              </div>
+            </div>
+            <a class="home-link" href="/about-us">
+              Learn More About Us
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <div>
+            <div class="home-video">
+              <iframe
+                class="home-video__iframe"
+                src="https://www.youtube.com/embed/DRZiD8VU4bA?rel=0&modestbranding=1"
+                title="SUNWE VEHICLE Factory Tour"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              />
+            </div>
+            <div class="home-video-card">
+              <h4 class="home-video-card__title">More Videos</h4>
+              <div class="home-video-card__links">
+                <a href="https://www.youtube.com/@sunwevehicle" target="_blank" rel="noopener noreferrer">
+                  → Factory Tour & Manufacturing Process
+                </a>
+                <a href="https://www.youtube.com/@sunwevehicle" target="_blank" rel="noopener noreferrer">
+                  → Product Testing & Quality Control
+                </a>
+                <a href="https://www.youtube.com/@sunwevehicle" target="_blank" rel="noopener noreferrer">
+                  → Customer Success Stories
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="home-section bg-sw-gray">
+        <div class="container">
+          <div class="home-section__head">
+            <div>
+              <h2 class="home-h2">Our Product Series</h2>
+              <p class="muted" style="margin:0">Comprehensive range of heavy-duty trucks, engines, and semi-trailers</p>
+            </div>
+            <a class="home-link" href="/products">
+              View All Products
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <div class="home-series">
+            {productSeries.map((s) => (
+              <a class="home-series__card" href="/products">
+                <img src={s.image} alt="" loading="lazy" />
+                <div class="home-series__grad"></div>
+                <div class="home-series__body">
+                  <h3>{s.title}</h3>
+                  <p>{s.description}</p>
+                  <div class="home-series__cta">
+                    <span class="home-series__icon" aria-hidden="true">›</span>
+                    <span>View Details</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="home-section">
+        <div class="container">
+          <div class="home-center">
+            <p class="home-kicker"><span aria-hidden="true">👥</span> SUCCESS STORIES</p>
+            <h2 class="home-h2">Trusted Worldwide</h2>
+            <p class="muted home-center__sub">
+              Our trucks are working hard in mining sites, construction projects, and logistics companies across 50+ countries
+            </p>
+          </div>
+          {posts.length === 0 ? (
+            <p class="muted">Blog stories will appear here once published.</p>
+          ) : (
+            <div class="grid-cards">{posts.map((post) => <BlogCard post={post} />)}</div>
+          )}
+          <div class="home-center">
+            <a class="home-link" href="/blog">
+              View All Success Stories
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="home-cta">
+        <div class="container home-cta__inner">
+          <h2 class="home-cta__title">Not Sure Which One Fits You?</h2>
+          <p class="home-cta__text">
+            Tell us your working conditions, budget, and usage scenarios. Our engineering team will recommend the most suitable vehicle solution for free.
+          </p>
+          <a class="btn btn--sw-gradient home-cta__btn" href="/contact-us">Get Expert Recommendation</a>
+          <p class="home-cta__note">Average response time: Within 2 hours during working hours</p>
+        </div>
+      </section>
+    </main>
+    <Footer />
+    <WhatsAppFloat />
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-hero {
+    position: relative;
+    min-height: 31.25rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .home-hero {
+      min-height: 37.5rem;
+    }
+  }
+
+  .home-hero__bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: linear-gradient(90deg, #2a3f5f, #5b9bd5);
+  }
+
+  .home-hero__bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+  }
+
+  .home-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(26, 31, 46, 0.95), rgba(26, 31, 46, 0.4), rgba(26, 31, 46, 0.1));
+  }
+
+  .home-hero__content {
+    position: relative;
+    z-index: 1;
+    padding-block: var(--space-12);
+    text-align: left;
+    margin-left: 0;
+    margin-right: auto;
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .home-hero__content {
+      padding-left: var(--space-8);
+      padding-right: var(--space-8);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .home-hero__content {
+      padding-left: var(--space-12);
+    }
+  }
+
+  .home-hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--sw-accent);
+    font-size: clamp(0.65rem, 1.5vw, 0.875rem);
+    letter-spacing: 0.08em;
+    font-weight: var(--font-semibold);
+    margin: 0 0 var(--space-4);
+  }
+
+  .home-hero__title {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 1.08;
+    font-weight: 800;
+  }
+
+  .home-hero__accent {
+    color: var(--sw-accent);
+    display: block;
+  }
+
+  .home-hero__line-white {
+    display: block;
+    color: #fff;
+  }
+
+  .home-hero__lead {
+    margin: 0 0 var(--space-8);
+    color: #d1d5db;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    line-height: 1.65;
+    max-width: 42rem;
+  }
+
+  .home-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .home-section {
+    padding-block: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .home-section {
+      padding-block: var(--space-16);
+    }
+  }
+
+  .home-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  @media (min-width: 768px) {
+    .home-section__head {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+  }
+
+  .home-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--sw-accent);
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    font-weight: var(--font-semibold);
+    margin: 0 0 var(--space-2);
+  }
+
+  .home-h2 {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--sw-accent);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+  }
+
+  .home-link:hover {
+    color: var(--sw-accent-mid);
+  }
+
+  .home-split {
+    display: grid;
+    gap: var(--space-10);
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .home-split {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .home-prose {
+    color: #374151;
+    line-height: 1.7;
+    margin: 0 0 var(--space-4);
+  }
+
+  .home-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+  }
+
+  @media (min-width: 480px) {
+    .home-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 640px) {
+    .home-stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .home-stat {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .home-stat__num {
+    font-size: clamp(1.5rem, 3vw, 1.875rem);
+    font-weight: var(--font-bold);
+    color: var(--sw-accent);
+    margin-bottom: 0.25rem;
+  }
+
+  .home-stat__lbl {
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+    color: #4b5563;
+  }
+
+  .home-video {
+    border-radius: var(--radius-3xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+
+  .home-video__iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .home-video__placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: var(--space-6);
+    text-align: center;
+    font-size: var(--text-sm);
+  }
+
+  .home-video-card {
+    margin-top: var(--space-6);
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .home-video-card__title {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-base);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .home-video-card__links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .home-video-card__links a {
+    font-size: var(--text-sm);
+    color: #4b5563;
+    text-decoration: none;
+  }
+
+  .home-video-card__links a:hover {
+    color: var(--sw-accent);
+  }
+
+  .home-series {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .home-series {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .home-series__card {
+    position: relative;
+    display: block;
+    height: 20rem;
+    border-radius: var(--radius-3xl);
+    overflow: hidden;
+    color: #fff;
+  }
+
+  .home-series__card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .home-series__card:hover img {
+    transform: scale(1.08);
+  }
+
+  .home-series__grad {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35), transparent);
+  }
+
+  .home-series__body {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: var(--space-8);
+  }
+
+  .home-series__body h3 {
+    margin: 0 0 var(--space-2);
+    color: #fff;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  }
+
+  .home-series__body p {
+    margin: 0 0 var(--space-4);
+    color: #d1d5db;
+    font-size: clamp(0.8rem, 1.8vw, 0.875rem);
+  }
+
+  .home-series__cta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--sw-accent);
+    font-weight: var(--font-semibold);
+  }
+
+  .home-series__icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: var(--sw-accent);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .home-center {
+    text-align: center;
+  }
+
+  .home-center__sub {
+    max-width: 42rem;
+    margin-inline: auto;
+  }
+
+  .home-cta {
+    background: var(--sw-shell);
+    color: #fff;
+    padding-block: var(--space-12);
+  }
+
+  .home-cta__inner {
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .home-cta__title {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(1.25rem, 3vw, 2.25rem);
+    color: #fff;
+  }
+
+  .home-cta__text {
+    margin: 0 0 var(--space-6);
+    color: #9ca3af;
+    font-size: clamp(0.95rem, 2vw, 1.125rem);
+    line-height: 1.65;
+  }
+
+  .home-cta__btn {
+    padding-inline: var(--space-8);
+    padding-block: 0.85rem;
+    font-size: var(--text-base);
+  }
+
+  .home-cta__note {
+    margin: var(--space-4) 0 0;
+    font-size: var(--text-xs);
+    color: #6b7280;
+  }
+</style>

@@ -1,0 +1,798 @@
+---
+import { getCategories } from '../lib/woocommerce';
+
+const pathname = Astro.url.pathname;
+const wa = import.meta.env.WA_NUMBER;
+const waDigits = String(wa ?? '').replace(/\D/g, '');
+const waDisplay = waDigits ? `+${waDigits}` : '';
+const waLink = waDigits ? `https://wa.me/${waDigits}` : '#';
+
+// Fetch WooCommerce categories
+const categories = await getCategories().catch(() => []);
+
+// Group categories by parent (parent=0 is top-level)
+const topLevelCategories = categories.filter(c => c.parent === 0);
+const subCategories = categories.filter(c => c.parent !== 0);
+
+// Group sub-categories by their parent ID
+const subCatsByParent = subCategories.reduce((acc, cat) => {
+  if (!acc[cat.parent]) acc[cat.parent] = [];
+  acc[cat.parent].push(cat);
+  return acc;
+}, {} as Record<number, typeof subCategories>);
+
+// Helper to determine which group a category belongs to
+function getCategoryGroup(name: string): 'trucks' | 'trailers' | 'engines' | 'others' {
+  const lower = name.toLowerCase();
+  
+  // Priority 1: Semi-Trailers (must contain 'trailer' or 'semi')
+  if (lower.includes('trailer') || lower.includes('semi')) {
+    return 'trailers';
+  }
+  
+  // Priority 2: Engines
+  if (/engine|motor|weichai|cummins|yuchai|deutz|shangchai|faw|sinotruk/i.test(lower)) {
+    return 'engines';
+  }
+  
+  // Priority 3: Trucks (contains 'truck' but we already checked for trailer above)
+  if (lower.includes('truck')) {
+    return 'trucks';
+  }
+  
+  // Priority 4: Truck-related categories (but NOT trailer-related)
+  const truckKeywords = /dump|tractor|cargo|concrete|mixer|pump|crane|garbage|wrecker|fire|mining|aerial|sprinkler|sewer|suction|sweeper|led|advertising|bulk|cement|livestock|animal|bulk$/i;
+  const trailerKeywords = /flatbed|lowboy|container|fence|van|skeleton|tipper|tanker|reefer|refrigerated|lowbed|cargo trailer|tanker trailer|oil|fuel|lpg|lng|chemical|grain|silo/i;
+  
+  if (truckKeywords.test(lower)) {
+    return 'trucks';
+  }
+  
+  // Priority 5: Trailer-related keywords
+  if (trailerKeywords.test(lower)) {
+    return 'trailers';
+  }
+  
+  // Default: others
+  return 'others';
+}
+
+// Define category groups for mega menu
+const getCategoryGroups = () => {
+  const groups: { title: string; items: { name: string; path: string }[] }[] = [];
+  
+  // Categorize all top-level categories
+  const trucks: typeof topLevelCategories = [];
+  const trailers: typeof topLevelCategories = [];
+  const engines: typeof topLevelCategories = [];
+  const others: typeof topLevelCategories = [];
+  
+  topLevelCategories.forEach(cat => {
+    const group = getCategoryGroup(cat.name);
+    switch (group) {
+      case 'trucks':
+        trucks.push(cat);
+        break;
+      case 'trailers':
+        trailers.push(cat);
+        break;
+      case 'engines':
+        engines.push(cat);
+        break;
+      default:
+        others.push(cat);
+    }
+  });
+  
+  // Build group items with their sub-categories
+  const buildGroupItems = (cats: typeof topLevelCategories) => {
+    const items: { name: string; path: string }[] = [];
+    cats.forEach(cat => {
+      // Add parent category
+      items.push({ name: cat.name, path: `/products?category=${cat.slug}` });
+      // Add sub-categories if any
+      const subs = subCatsByParent[cat.id] || [];
+      subs.forEach(sub => {
+        items.push({ name: `— ${sub.name}`, path: `/products?category=${sub.slug}` });
+      });
+    });
+    return items;
+  };
+  
+  if (trucks.length > 0) {
+    groups.push({ title: 'Trucks', items: buildGroupItems(trucks) });
+  }
+  if (trailers.length > 0) {
+    groups.push({ title: 'Semi-Trailers', items: buildGroupItems(trailers) });
+  }
+  if (engines.length > 0) {
+    groups.push({ title: 'Engine & Parts', items: buildGroupItems(engines) });
+  }
+  if (others.length > 0 && groups.length < 3) {
+    groups.push({ title: 'Others', items: buildGroupItems(others) });
+  }
+  
+  // If no groups were created, just split all categories evenly
+  if (groups.length === 0 && topLevelCategories.length > 0) {
+    const chunkSize = Math.ceil(topLevelCategories.length / 3);
+    for (let i = 0; i < 3 && i * chunkSize < topLevelCategories.length; i++) {
+      const chunk = topLevelCategories.slice(i * chunkSize, (i + 1) * chunkSize);
+      groups.push({ 
+        title: i === 0 ? 'Products' : `More ${i + 1}`, 
+        items: buildGroupItems(chunk) 
+      });
+    }
+  }
+  
+  return groups;
+};
+
+const categoryGroups = getCategoryGroups();
+
+// Fallback to static data if no categories fetched
+const hasCategories = categoryGroups.length > 0;
+
+// Static fallback data (original structure)
+const fallbackGroups = [
+  {
+    title: 'Trucks',
+    items: [
+      { name: 'Heavy Duty Truck', path: '/products?category=heavy-duty-truck' },
+      { name: 'Dump Truck', path: '/products?category=dump-truck' },
+      { name: 'Tractor Truck', path: '/products?category=tractor-truck' },
+      { name: 'Cargo Truck', path: '/products?category=cargo-truck' },
+      { name: 'Refrigerated Truck', path: '/products?category=refrigerated-truck' },
+      { name: 'Fuel Tanker Truck', path: '/products?category=fuel-tanker' },
+      { name: 'Water Sprinkler Truck', path: '/products?category=water-truck' },
+      { name: 'Concrete Mixer Truck', path: '/products?category=concrete-mixer' },
+      { name: 'Concrete Pump Truck', path: '/products?category=concrete-pump' },
+      { name: 'Mixer Pump Truck', path: '/products?category=mixer-pump' },
+      { name: 'Aerial Work Truck', path: '/products?category=aerial-work' },
+      { name: 'Crane Truck', path: '/products?category=crane-truck' },
+      { name: 'Garbage Truck', path: '/products?category=garbage-truck' },
+      { name: 'Flatbed Truck', path: '/products?category=flatbed-truck' },
+      { name: 'Wrecker Truck', path: '/products?category=wrecker-truck' },
+      { name: 'Fire Fighting Truck', path: '/products?category=fire-truck' },
+      { name: 'Mining Truck', path: '/products?category=mining-truck' },
+    ],
+  },
+  {
+    title: 'Semi-Trailers',
+    items: [
+      { name: 'Flatbed Semi-Trailer', path: '/products?category=flatbed-trailer' },
+      { name: 'Lowboy Semi-Trailer', path: '/products?category=lowbed-trailer' },
+      { name: 'Container Semi-Trailer', path: '/products?category=container-trailer' },
+      { name: 'Fence Cargo Trailer', path: '/products?category=fence-trailer' },
+      { name: 'Van Semi-Trailer', path: '/products?category=van-trailer' },
+      { name: 'Skeleton Semi-Trailer', path: '/products?category=skeleton-trailer' },
+      { name: 'Tipper Semi-Trailer', path: '/products?category=dump-trailer' },
+      { name: 'Tank Semi-Trailer', path: '/products?category=tank-trailer' },
+      { name: 'Refrigerated Semi-Trailer', path: '/products?category=reefer-trailer' },
+    ],
+  },
+  {
+    title: 'Engine Assembly',
+    items: [
+      { name: 'Weichai Engine', path: '/products?category=weichai-engine' },
+      { name: 'Sinotruk Engine', path: '/products?category=sinotruk-engine' },
+      { name: 'Cummins Engine', path: '/products?category=cummins-engine' },
+      { name: 'Yuchai Engine', path: '/products?category=yuchai-engine' },
+      { name: 'Deutz Engine', path: '/products?category=deutz-engine' },
+      { name: 'Shangchai Engine', path: '/products?category=shangchai-engine' },
+      { name: 'FAW Engine', path: '/products?category=faw-engine' },
+    ],
+  },
+];
+
+const displayGroups = hasCategories ? categoryGroups : fallbackGroups;
+
+function active(href: string, exact?: boolean) {
+  if (href === '/') return pathname === '/' ? 'is-active' : '';
+  if (exact) return pathname === href ? 'is-active' : '';
+  return pathname === href || pathname.startsWith(`${href}/`) ? 'is-active' : '';
+}
+
+const contactActive =
+  pathname === '/contact' || pathname === '/contact-us' ? 'is-active' : '';
+---
+
+<header class="sw-nav">
+  <div class="sw-nav__bar container">
+    <a class="sw-nav__brand" href="/">
+      <img class="sw-nav__logo" src="/brand/logo-nav.png" width="120" height="30" alt="SUNWE VEHICLE" />
+      <span class="sw-nav__company">Jinan Sunwe Vehicle Co., Ltd.</span>
+    </a>
+
+    <nav class="sw-nav__desktop" aria-label="Primary">
+      <a class:list={['sw-nav__link', active('/')]} href="/">HOME</a>
+
+      <div class="sw-nav__mega-wrap">
+        <a class:list={['sw-nav__link', 'sw-nav__link--caret', active('/products')]} href="/products">
+          PRODUCTS
+        </a>
+        <div class="sw-nav__mega" role="navigation" aria-label="Product categories">
+          <div class="sw-nav__mega-inner">
+            {displayGroups.map((group) => (
+              <div class="sw-nav__mega-col">
+                <h3 class="sw-nav__mega-title">{group.title}</h3>
+                <ul class="sw-nav__mega-list">
+                  {group.items.map((item) => (
+                    <li>
+                      <a href={item.path}>{item.name}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <a class:list={['sw-nav__link', active('/videos', true)]} href="/videos">VIDEO</a>
+      <a class:list={['sw-nav__link', active('/about-us', true)]} href="/about-us">ABOUT US</a>
+      <a class:list={['sw-nav__link', active('/blog')]} href="/blog">BLOG</a>
+      <a class:list={['sw-nav__link', contactActive]} href="/contact-us">CONTACT US</a>
+    </nav>
+
+    <div class="sw-nav__actions">
+      <a class="sw-nav__phone" href={waLink} target="_blank" rel="noopener noreferrer">
+        <span class="sw-nav__phone-icon" aria-hidden="true">☎</span>
+        <span>{waDisplay || 'WhatsApp'}</span>
+      </a>
+      
+      <div class="sw-nav__lang">
+        <button type="button" class="sw-nav__lang-btn" id="lang-toggle" aria-expanded="false" aria-controls="lang-dropdown">
+          <span class="sw-nav__lang-flag">🇬🇧</span>
+          <span class="sw-nav__lang-code">EN</span>
+          <span class="sw-nav__lang-arrow" aria-hidden="true">▾</span>
+        </button>
+        <ul class="sw-nav__lang-dropdown" id="lang-dropdown" hidden>
+          <li><a href="/" class="sw-nav__lang-option is-active" data-lang="en"><span class="sw-nav__lang-flag">🇬🇧</span> English</a></li>
+          <li><a href="/zh" class="sw-nav__lang-option" data-lang="zh"><span class="sw-nav__lang-flag">🇨🇳</span> 中文</a></li>
+          <li><a href="/es" class="sw-nav__lang-option" data-lang="es"><span class="sw-nav__lang-flag">🇪🇸</span> Español</a></li>
+          <li><a href="/ar" class="sw-nav__lang-option" data-lang="ar"><span class="sw-nav__lang-flag">🇸🇦</span> العربية</a></li>
+          <li><a href="/fr" class="sw-nav__lang-option" data-lang="fr"><span class="sw-nav__lang-flag">🇫🇷</span> Français</a></li>
+          <li><a href="/ru" class="sw-nav__lang-option" data-lang="ru"><span class="sw-nav__lang-flag">🇷🇺</span> Русский</a></li>
+        </ul>
+      </div>
+      
+      <a class="btn btn--sw-gradient sw-nav__quote" href="/contact-us">Get Quote</a>
+      <button type="button" class="sw-nav__burger" id="sw-nav-toggle" aria-expanded="false" aria-controls="sw-nav-mobile" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="sw-nav__mobile" id="sw-nav-mobile" hidden>
+    <div class="container sw-nav__mobile-inner">
+      <a class:list={['sw-nav__mlink', active('/')]} href="/">HOME</a>
+      <details class="sw-nav__details">
+        <summary>PRODUCTS</summary>
+        <div class="sw-nav__mobile-mega">
+          {displayGroups.map((group) => (
+            <div class="sw-nav__mobile-block">
+              <div class="sw-nav__mobile-cat">{group.title}</div>
+              <ul>
+                {group.items.map((item) => (
+                  <li>
+                    <a href={item.path}>{item.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </details>
+      <a class:list={['sw-nav__mlink', active('/videos', true)]} href="/videos">VIDEO</a>
+      <a class:list={['sw-nav__mlink', active('/about-us', true)]} href="/about-us">ABOUT US</a>
+      <a class:list={['sw-nav__mlink', active('/blog')]} href="/blog">BLOG</a>
+      <a class:list={['sw-nav__mlink', contactActive]} href="/contact-us">CONTACT US</a>
+      
+      <!-- Mobile Language Switcher -->
+      <div class="sw-nav__mobile-lang">
+        <div class="sw-nav__mobile-lang-title">🌐 Language</div>
+        <div class="sw-nav__mobile-lang-options">
+          <a href="/" class="sw-nav__mobile-lang-option is-active">🇬🇧 EN</a>
+          <a href="/zh" class="sw-nav__mobile-lang-option">🇨🇳 中文</a>
+          <a href="/es" class="sw-nav__mobile-lang-option">🇪🇸 ES</a>
+          <a href="/ar" class="sw-nav__mobile-lang-option">🇸🇦 AR</a>
+          <a href="/fr" class="sw-nav__mobile-lang-option">🇫🇷 FR</a>
+          <a href="/ru" class="sw-nav__mobile-lang-option">🇷🇺 RU</a>
+        </div>
+      </div>
+      
+      <a class="btn btn--sw-gradient sw-nav__mobile-cta" href="/contact-us">Get Quote</a>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (function () {
+    // Mobile menu toggle
+    var btn = document.getElementById('sw-nav-toggle');
+    var panel = document.getElementById('sw-nav-mobile');
+    if (!btn || !panel) return;
+    function setOpen(open) {
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.body.classList.toggle('sw-nav-open', open);
+    }
+    btn.addEventListener('click', function () {
+      setOpen(panel.hidden);
+    });
+    panel.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        setOpen(false);
+      });
+    });
+  })();
+
+  // Language switcher
+  (function () {
+    var langBtn = document.getElementById('lang-toggle');
+    var langDropdown = document.getElementById('lang-dropdown');
+    if (!langBtn || !langDropdown) return;
+
+    function toggleLangDropdown(e) {
+      e.stopPropagation();
+      var isOpen = !langDropdown.hidden;
+      langDropdown.hidden = isOpen;
+      langBtn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    }
+
+    langBtn.addEventListener('click', toggleLangDropdown);
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function () {
+      langDropdown.hidden = true;
+      langBtn.setAttribute('aria-expanded', 'false');
+    });
+
+    // Prevent closing when clicking inside dropdown
+    langDropdown.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+  })();
+</script>
+
+<style>
+  .sw-nav {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: var(--sw-shell);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .sw-nav__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: 0.65rem;
+  }
+
+  .sw-nav__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+  }
+
+  .sw-nav__logo {
+    height: 2.25rem;
+    width: auto;
+    max-width: 160px;
+  }
+
+  .sw-nav__company {
+    display: none;
+    font-size: var(--text-xs);
+    color: var(--sw-muted);
+    border-left: 1px solid #4b5563;
+    padding-left: var(--space-3);
+    line-height: 1.3;
+    max-width: 14rem;
+  }
+
+  @media (min-width: 1280px) {
+    .sw-nav__company {
+      display: block;
+    }
+  }
+
+  .sw-nav__desktop {
+    display: none;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 1024px) {
+    .sw-nav__desktop {
+      display: flex;
+    }
+  }
+
+  .sw-nav__link {
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    font-weight: var(--font-semibold);
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .sw-nav__link:hover,
+  .sw-nav__link.is-active {
+    color: var(--sw-accent);
+  }
+
+  .sw-nav__link--caret::after {
+    content: '▾';
+    margin-left: 0.25rem;
+    font-size: 0.65rem;
+    opacity: 0.85;
+  }
+
+  .sw-nav__mega-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    margin-bottom: -0.5rem;
+  }
+
+  .sw-nav__mega-wrap:hover .sw-nav__mega {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .sw-nav__mega {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: min(860px, 85vw);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease,
+      visibility 0.15s;
+    padding-top: 0.5rem;
+  }
+
+  .sw-nav__mega-inner {
+    background: var(--sw-panel);
+    border: 1px solid var(--sw-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sw-nav__mega-title {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+    color: var(--sw-accent);
+    border-bottom: 1px solid var(--sw-border);
+    padding-bottom: var(--space-2);
+  }
+
+  .sw-nav__mega-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .sw-nav__mega-list a {
+    display: block;
+    padding: 0.35rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    color: #d1d5db;
+    text-decoration: none;
+  }
+
+  .sw-nav__mega-list a:hover {
+    background: var(--sw-accent);
+    color: #fff;
+  }
+
+  .sw-nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .sw-nav__phone {
+    display: none;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--text-sm);
+    color: #e5e7eb;
+    text-decoration: none;
+  }
+
+  @media (min-width: 900px) {
+    .sw-nav__phone {
+      display: inline-flex;
+    }
+  }
+
+  .sw-nav__phone-icon {
+    color: var(--sw-accent);
+  }
+
+  .sw-nav__lang {
+    position: relative;
+  }
+
+  .sw-nav__lang-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .sw-nav__lang-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .sw-nav__lang-flag {
+    font-size: 0.9rem;
+  }
+
+  .sw-nav__lang-code {
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    .sw-nav__lang-code {
+      display: inline;
+    }
+  }
+
+  .sw-nav__lang-arrow {
+    font-size: 0.6rem;
+    opacity: 0.7;
+    margin-left: 0.1rem;
+  }
+
+  .sw-nav__lang-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 160px;
+    background: var(--sw-panel);
+    border: 1px solid var(--sw-border);
+    border-radius: var(--radius-lg);
+    padding: 0.5rem;
+    box-shadow: var(--shadow-lg);
+    list-style: none;
+    z-index: 70;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  }
+
+  .sw-nav__lang-dropdown:not([hidden]) {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .sw-nav__lang-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    color: #d1d5db;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .sw-nav__lang-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+
+  .sw-nav__lang-option.is-active {
+    background: rgba(255, 68, 56, 0.15);
+    color: var(--sw-accent);
+  }
+
+  @media (max-width: 640px) {
+    .sw-nav__lang {
+      display: none;
+    }
+  }
+
+  .sw-nav__quote {
+    display: none;
+    padding-inline: var(--space-6);
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 768px) {
+    .sw-nav__quote {
+      display: inline-flex;
+    }
+  }
+
+  .sw-nav__burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .sw-nav__burger span {
+    display: block;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+  }
+
+  @media (min-width: 1024px) {
+    .sw-nav__burger {
+      display: none;
+    }
+  }
+
+  .sw-nav__mobile {
+    border-top: 1px solid var(--sw-border);
+    background: var(--sw-panel);
+  }
+
+  .sw-nav__mobile-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-block: var(--space-4);
+  }
+
+  .sw-nav__mlink {
+    padding: 0.65rem 0.75rem;
+    border-radius: var(--radius-md);
+    color: #e5e7eb;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+  }
+
+  .sw-nav__mlink:hover,
+  .sw-nav__mlink.is-active {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--sw-accent);
+  }
+
+  .sw-nav__details summary {
+    cursor: pointer;
+    padding: 0.65rem 0.75rem;
+    font-weight: var(--font-semibold);
+    color: #fff;
+    list-style:-none;
+  }
+
+  .sw-nav__details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .sw-nav__mobile-mega {
+    padding: 0 0.5rem 0.75rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 50vh;
+    overflow: auto;
+  }
+
+  .sw-nav__mobile-cat {
+    font-size: var(--text-xs);
+    font-weight: var(--font-bold);
+    color: var(--sw-accent);
+    margin-bottom: 0.25rem;
+  }
+
+  .sw-nav__mobile-block ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .sw-nav__mobile-block a {
+    font-size: var(--text-sm);
+    color: #d1d5db;
+    padding: 0.2rem 0;
+    display: block;
+  }
+
+  .sw-nav__mobile-cta {
+    margin-top: var(--space-2);
+    justify-content: center;
+  }
+
+  @media (min-width: 1024px) {
+    .sw-nav__mobile {
+      display: none !important;
+    }
+  }
+
+  :global(body.sw-nav-open) {
+    overflow: hidden;
+  }
+
+  /* Mobile Language Switcher */
+  .sw-nav__mobile-lang {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--sw-border);
+  }
+
+  .sw-nav__mobile-lang-title {
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    color: var(--sw-accent);
+    margin-bottom: var(--space-3);
+    letter-spacing: 0.05em;
+  }
+
+  .sw-nav__mobile-lang-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .sw-nav__mobile-lang-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.25rem;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    font-size: var(--text-sm);
+    color: #d1d5db;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .sw-nav__mobile-lang-option:hover,
+  .sw-nav__mobile-lang-option.is-active {
+    background: rgba(255, 68, 56, 0.2);
+    color: var(--sw-accent);
+  }
+
+  @media (min-width: 640px) {
+    .sw-nav__mobile-lang {
+      display: none;
+    }
+  }
+</style>

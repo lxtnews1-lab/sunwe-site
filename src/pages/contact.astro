@@ -1,0 +1,246 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+
+const web3Key = import.meta.env.WEB3FORMS_KEY;
+
+const title = 'Contact Us';
+const description =
+  'Send an inquiry to Sunwe Vehicle — WhatsApp, email, or this form. We respond within 24 hours.';
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/contact">
+  <div class="page">
+    <Nav />
+    <main class="main">
+      <div class="container">
+        <header class="page-head">
+          <h1>Contact Us</h1>
+          <p class="muted">
+            Tell us about your market and vehicle needs. Prefer chat? Use WhatsApp or email{' '}
+            <a href="mailto:sales@sunwevehicle.com">sales@sunwevehicle.com</a>.
+          </p>
+        </header>
+
+        <div class="contact-layout">
+          <form class="inquiry surface" id="inquiry-form" novalidate>
+            <div class="hp" aria-hidden="true">
+              <label for="botcheck">Leave this field empty</label>
+              <input type="text" id="botcheck" name="botcheck" value="" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="form-grid form-grid--2">
+              <div class="form-field">
+                <label for="full_name">Full Name <span class="req">*</span></label>
+                <input id="full_name" name="full_name" type="text" required autocomplete="name" />
+              </div>
+              <div class="form-field">
+                <label for="company_name">Company Name</label>
+                <input id="company_name" name="company_name" type="text" autocomplete="organization" />
+              </div>
+            </div>
+
+            <div class="form-grid form-grid--2">
+              <div class="form-field">
+                <label for="country">Country <span class="req">*</span></label>
+                <input id="country" name="country" type="text" required autocomplete="country-name" />
+              </div>
+              <div class="form-field">
+                <label for="phone">WhatsApp / Tel Number <span class="req">*</span></label>
+                <input id="phone" name="phone" type="tel" required autocomplete="tel" />
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="email">Email Address <span class="req">*</span></label>
+              <input id="email" name="email" type="email" required autocomplete="email" />
+            </div>
+
+            <div class="form-field">
+              <label for="additional">Additional Information</label>
+              <textarea id="additional" name="additional" rows="5"></textarea>
+            </div>
+
+            <button class="btn btn--primary btn--block" type="submit">Send Inquiry</button>
+
+            <p class="form-msg form-msg--ok" id="form-success" data-visible="false">
+              Thank you! Your inquiry has been sent. We will contact you within 24 hours.
+            </p>
+            <p class="form-msg form-msg--err" id="form-error" data-visible="false">
+              Something went wrong. Please try WhatsApp or email us directly.
+            </p>
+          </form>
+
+          <div class="contact-info">
+            <div class="info-card surface">
+              <h3>Our Location</h3>
+              <p class="address">
+                E39, Building 3, Aosheng Mansion,<br />
+                No. 1166 Xinluo Street,<br />
+                Shunhua Road Sub-district,<br />
+                Jinan Area of China (Shandong)<br />
+                Pilot Free Trade Zone
+              </p>
+            </div>
+            
+            <div class="map-container surface">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3259.1894317677723!2d117.13417907586762!3d36.67363877229761!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x35c0f0d13c7052f5%3A0x60b0e184db738c31!2sAosheng%20Building!5e0!3m2!1sen!2sus!4v1711094400000!5m2!1sen!2sus"
+                width="100%"
+                height="300"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Aosheng Building Location"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <Footer />
+    <WhatsAppFloat />
+  </div>
+</BaseLayout>
+
+<script
+  define:vars={{
+    web3Key,
+  }}
+>
+  const form = document.getElementById('inquiry-form');
+  const okEl = document.getElementById('form-success');
+  const errEl = document.getElementById('form-error');
+
+  function setVisible(el, on) {
+    if (!el) return;
+    el.setAttribute('data-visible', on ? 'true' : 'false');
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setVisible(okEl, false);
+      setVisible(errEl, false);
+
+      const fd = new FormData(form);
+      const fullName = String(fd.get('full_name') ?? '').trim();
+      const company = String(fd.get('company_name') ?? '').trim();
+      const country = String(fd.get('country') ?? '').trim();
+      const phone = String(fd.get('phone') ?? '').trim();
+      const email = String(fd.get('email') ?? '').trim();
+      const additional = String(fd.get('additional') ?? '').trim();
+      const botcheck = String(fd.get('botcheck') ?? '').trim();
+
+      const messageLines = [
+        `Full Name: ${fullName}`,
+        `Company: ${company || '—'}`,
+        `Country: ${country}`,
+        `WhatsApp / Tel: ${phone}`,
+        '',
+        additional ? `Additional:\n${additional}` : '',
+      ].filter(Boolean);
+
+      const payload = {
+        access_key: web3Key,
+        name: fullName,
+        email,
+        subject: 'Sunwe Vehicle — Website inquiry',
+        message: messageLines.join('\n'),
+        botcheck,
+      };
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (res.ok && data && data.success) {
+          setVisible(okEl, true);
+          form.reset();
+        } else {
+          setVisible(errEl, true);
+        }
+      } catch {
+        setVisible(errEl, true);
+      }
+    });
+  }
+</script>
+
+<style>
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main {
+    padding-block: var(--space-12);
+    flex: 1;
+  }
+
+  .page-head {
+    margin-bottom: var(--space-8);
+  }
+
+  .page-head h1 {
+    font-size: var(--text-4xl);
+  }
+
+  .contact-layout {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 1024px) {
+    .contact-layout {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  .inquiry {
+    padding: var(--space-8);
+  }
+
+  .req {
+    color: var(--color-danger);
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .info-card {
+    padding: var(--space-6);
+  }
+
+  .info-card h3 {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-lg);
+    color: var(--color-text);
+  }
+
+  .info-card .address {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+
+  .map-container {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .map-container iframe {
+    display: block;
+    border-radius: var(--radius-lg);
+  }
+</style>

@@ -1,0 +1,119 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  heroImage?: string;
+}
+
+const { title, description, canonicalPath, heroImage } = Astro.props;
+const site = Astro.site?.toString().replace(/\/$/, '') ?? 'https://sunwevehicle.com';
+const canonical = canonicalPath ? `${site}${canonicalPath.startsWith('/') ? '' : '/'}${canonicalPath}` : site;
+const fullTitle = title.includes('Sunwe Vehicle') ? title : `${title} | Sunwe Vehicle`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    
+    <!-- DNS Prefetch and Preconnect -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://sunwevehicle.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://sunwevehicle.com" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/brand/logo-nav.png" as="image" type="image/png" fetchpriority="high" />
+    {heroImage && <link rel="preload" href={heroImage} as="image" fetchpriority="high" />}
+    
+    <!-- Preload Fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    </noscript>
+    
+    <!-- Critical CSS Inline -->
+    <style is:inline>
+      /* Critical CSS for above-the-fold content */
+      html { scroll-behavior: smooth; }
+      body { 
+        margin: 0; 
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+      img { max-width: 100%; height: auto; display: block; }
+      
+      /* Prevent FOUC */
+      .sw-nav { visibility: visible !important; }
+    </style>
+  </head>
+  <body>
+    <slot />
+    
+    <!-- Disable right-click on images -->
+    <script is:inline>
+      (function() {
+        // Disable right-click on images
+        document.addEventListener('contextmenu', function(e) {
+          if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+          }
+        });
+        
+        // Disable drag on images
+        document.addEventListener('dragstart', function(e) {
+          if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+          }
+        });
+        
+        // Disable copy on images
+        document.addEventListener('copy', function(e) {
+          if (e.target.tagName === 'IMG' || window.getSelection().toString() === '') {
+            e.preventDefault();
+            return false;
+          }
+        });
+      })();
+    </script>
+    
+    <!-- Lazy load non-critical scripts -->
+    <script>
+      // Lazy load images with native lazy loading
+      if ('loading' in HTMLImageElement.prototype) {
+        const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+        lazyImages.forEach(img => {
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

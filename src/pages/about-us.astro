@@ -1,0 +1,438 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+
+const title = 'About SUNWE';
+const description =
+  'Jinan Sunwe Vehicle Co., Ltd. is a professional exporter specializing in special trucks and semi trailers with over 13 years of industry experience.';
+const factoryImg =
+  'http://sunwevehicle.com/wp-content/uploads/2026/03/about01.jpg';
+const truckImg =
+  'http://sunwevehicle.com/wp-content/uploads/2026/03/停车场.png';
+
+const workshops = [
+  {
+    number: '01',
+    title: 'Tank Shell Forming & Welding',
+    description: 'CNC automated welding for precise heavy-duty cylindrical tank production',
+    image:
+      'http://sunwevehicle.com/wp-content/uploads/2026/03/1684747718715183.jpg',
+  },
+  {
+    number: '02',
+    title: 'Intelligent Welding',
+    description: 'Automated robots for uniform and strong welds',
+    image:
+      'http://sunwevehicle.com/wp-content/uploads/2026/03/1684747795393820.jpg',
+  },
+  {
+    number: '03',
+    title: 'Anti-corrosion Painting',
+    description: 'Electrophoretic coating for long-term rust protection',
+    image:
+      'http://sunwevehicle.com/wp-content/uploads/2026/03/1684747764234442.jpg',
+  },
+  {
+    number: '04',
+    title: 'Lean Assembly',
+    description: 'Standardized lines for orderly vehicle assembly',
+    image:
+      'http://sunwevehicle.com/wp-content/uploads/2026/03/1684747839577287.jpg',
+  },
+];
+
+const certifications = [
+  { name: 'ISO 9001:2015', type: 'Quality Management' },
+  { name: 'CE Certification', type: 'European Standards' },
+  { name: 'SGS Verified', type: 'Product Quality' },
+  { name: 'SINOTRUK Partner', type: 'Authorized Dealer' },
+];
+
+const why = [
+  'Factory-direct supply with transparent quotations on inquiry',
+  '13+ years of truck manufacturing and export expertise',
+  'Professional customization for specific needs',
+  'Complete global logistics and customs support',
+  'High-quality products with reliable service',
+  'Dedicated after-sales service team',
+];
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/about-us">
+  <div class="page">
+    <Nav />
+    <main>
+      <section class="about-hero">
+        <div class="container">
+          <h1>About SUNWE</h1>
+          <p>Jinan Sunwe Vehicle Co., Ltd. is a professional exporter specializing in special trucks and semi trailers with over 13 years of industry experience.</p>
+        </div>
+      </section>
+
+      <section class="about-section">
+        <div class="container about-split">
+          <div>
+            <h2>Leading Truck Export Expert</h2>
+            <div class="about-prose">
+              <p>
+                Jinan Sunwe Vehicle Co., Ltd. is located in Jinan city. A professional exporter specializing in special trucks and semi trailers. Our trucks lineup includes truck-mounted cranes, refrigerated trucks, water sprinkler trucks, sewer suction trucks, fuel tankers, self loading mixers, concrete pump trucks, and pump mixer integrated vehicles.
+              </p>
+              <p>
+                Our semi-trailer lineup includes fuel tanker semi trailers, low bed semi trailers, container semi trailers, refrigerated semi trailers, dump semi trailers, powder material transport trailer and so on.
+              </p>
+              <p>
+                With a professional team over 13 years of industry experience, we ensure smooth communication and accurate confirmation of technical requirements throughout the entire process from design to delivery. We are committed to providing high-quality products and reliable service to meet the diverse needs of global customers.
+              </p>
+              <p>
+                Whether you would like to select a product from our existing catalog or seek technical assistance, please feel free to contact our customer service center and let us know your purchasing requirements.
+              </p>
+            </div>
+            <div class="about-mini">
+              <div>
+                <div class="about-mini__n">13+</div>
+                <div class="about-mini__l">Years Experience</div>
+              </div>
+              <div>
+                <div class="about-mini__n">50+</div>
+                <div class="about-mini__l">Countries Served</div>
+              </div>
+              <div>
+                <div class="about-mini__n">5000+</div>
+                <div class="about-mini__l">Units Annually</div>
+              </div>
+            </div>
+          </div>
+          <div class="about-media">
+            <img src={factoryImg} alt="Manufacturing facility" loading="lazy" width="900" height="700" />
+          </div>
+        </div>
+      </section>
+
+      <section class="about-section bg-sw-gray">
+        <div class="container">
+          <div class="about-center">
+            <h2>Workshop Showcase</h2>
+            <div class="about-rule"></div>
+          </div>
+          <div class="about-grid">
+            {workshops.map((w) => (
+              <article class="about-card">
+                <div class="about-card__media">
+                  <img src={w.image} alt="" loading="lazy" />
+                  <div class="about-card__shade"></div>
+                </div>
+                <div class="about-card__body">
+                  <div class="about-card__num">{w.number}</div>
+                  <h3>{w.title}</h3>
+                  <p>{w.description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="about-section">
+        <div class="container">
+          <div class="about-center">
+            <h2>Certifications</h2>
+            <p class="muted">Compliant with international standards, quality you can trust</p>
+            <div class="about-rule"></div>
+          </div>
+          <div class="about-certs">
+            {certifications.map((c) => (
+              <div class="about-cert">
+                <div class="about-cert__icon" aria-hidden="true">★</div>
+                <h3>{c.name}</h3>
+                <p>{c.type}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="about-why">
+        <div class="container about-split">
+          <div>
+            <h2>Why Choose SUNWE?</h2>
+            <ul class="about-why__list">
+              {why.map((t) => (
+                <li>
+                  <span class="about-why__tick" aria-hidden="true">✓</span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="about-media">
+            <img src={truckImg} alt="Heavy duty trucks" loading="lazy" width="900" height="700" />
+          </div>
+        </div>
+      </section>
+    </main>
+    <Footer />
+    <WhatsAppFloat />
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .about-hero {
+    background: var(--sw-shell);
+    color: #fff;
+    padding-block: var(--space-12);
+  }
+
+  .about-hero h1 {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+  }
+
+  .about-hero p {
+    margin: 0;
+    max-width: 42rem;
+    color: #9ca3af;
+    font-size: var(--text-lg);
+  }
+
+  .about-section {
+    padding-block: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .about-section {
+      padding-block: var(--space-16);
+    }
+  }
+
+  .about-split {
+    display: grid;
+    gap: var(--space-10);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .about-split {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .about-prose p {
+    color: #4b5563;
+    line-height: 1.75;
+  }
+
+  .about-mini {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+    text-align: center;
+  }
+
+  .about-mini__n {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    color: var(--sw-accent);
+  }
+
+  .about-mini__l {
+    font-size: var(--text-sm);
+    color: #4b5563;
+  }
+
+  .about-media img {
+    width: 100%;
+    height: 24rem;
+    object-fit: cover;
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .about-center {
+    text-align: center;
+    margin-bottom: var(--space-10);
+  }
+
+  .about-center h2 {
+    margin: 0 0 var(--space-2);
+  }
+
+  .about-rule {
+    width: 5rem;
+    height: 0.25rem;
+    background: var(--sw-accent);
+    margin: var(--space-4) auto 0;
+    border-radius: 999px;
+  }
+
+  .about-grid {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .about-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .about-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .about-card {
+    background: #fff;
+    border-radius: var(--radius-3xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  .about-card__media {
+    position: relative;
+    height: 12rem;
+    overflow: hidden;
+  }
+
+  .about-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .about-card__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+  }
+
+  .about-card__body {
+    padding: var(--space-6);
+    margin-top: -3rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .about-card__num {
+    font-size: 3rem;
+    font-weight: var(--font-bold);
+    color: rgba(255, 68, 56, 0.2);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+  }
+
+  .about-card h3 {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-xl);
+  }
+
+  .about-card p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: #6b7280;
+  }
+
+  .about-certs {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .about-certs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .about-certs {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .about-cert {
+    background: #fff;
+    border: 2px solid #f3f4f6;
+    border-radius: var(--radius-3xl);
+    padding: var(--space-8);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .about-cert:hover {
+    border-color: rgba(255, 68, 56, 0.35);
+    box-shadow: var(--shadow-md);
+  }
+
+  .about-cert__icon {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 999px;
+    margin: 0 auto var(--space-4);
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, rgba(255, 68, 56, 0.12), rgba(255, 85, 68, 0.12));
+    color: var(--sw-accent);
+    font-size: 1.25rem;
+  }
+
+  .about-cert h3 {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-lg);
+  }
+
+  .about-cert p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: #6b7280;
+  }
+
+  .about-why {
+    background: var(--sw-shell);
+    color: #fff;
+    padding-block: var(--space-16);
+  }
+
+  .about-why h2 {
+    color: #fff;
+    margin: 0 0 var(--space-8);
+    font-size: var(--text-4xl);
+  }
+
+  .about-why__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .about-why__list li {
+    display: flex;
+    gap: var(--space-3);
+    color: #d1d5db;
+    line-height: 1.6;
+  }
+
+  .about-why__tick {
+    color: var(--sw-accent);
+    font-weight: var(--font-bold);
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+</style>

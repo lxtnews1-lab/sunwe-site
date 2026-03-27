@@ -1,0 +1,172 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { getAllPosts, getPostCategories } from '../../lib/wordpress';
+
+const categories = await getPostCategories().catch(() => []);
+const posts = await getAllPosts().catch(() => []);
+
+const idToSlug = new Map(categories.map((c) => [c.id, c.slug] as const));
+
+const title = 'Blog';
+const description = 'Factory updates, export logistics tips, and customer stories from Sunwe Vehicle.';
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/blog">
+  <div class="page">
+    <Nav />
+    <main class="main">
+      <div class="container">
+        <header class="page-head">
+          <h1>Blog</h1>
+          <p class="muted">Filter WordPress posts by category. URL supports <code>?category=slug</code>.</p>
+        </header>
+
+        <div class="filters" id="blog-filters" role="group" aria-label="Filter by category">
+          <button type="button" class="chip chip--all is-active" data-category="">All categories</button>
+          {categories.map((c) => (
+            <button type="button" class="chip" data-category={c.slug}>
+              {c.name}
+            </button>
+          ))}
+        </div>
+
+        {posts.length === 0 ? (
+          <p class="muted">No posts found.</p>
+        ) : (
+          <div class="grid-cards grid-cards--2" id="blog-grid">
+            {posts.map((post) => {
+              const slugs = post.categories.map((id) => idToSlug.get(id)).filter(Boolean) as string[];
+              return (
+                <div class="blog-wrap" data-cats={slugs.join(',')}>
+                  <BlogCard post={post} />
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </main>
+    <Footer />
+    <WhatsAppFloat />
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  (function () {
+    var grid = document.getElementById('blog-grid');
+    var filters = document.getElementById('blog-filters');
+    if (!grid || !filters) return;
+
+    function slugFromSearch() {
+      var q = new URLSearchParams(window.location.search);
+      return q.get('category') || '';
+    }
+
+    function setActive(slug) {
+      var buttons = filters.querySelectorAll('.chip');
+      buttons.forEach(function (btn) {
+        var v = btn.getAttribute('data-category') || '';
+        var isAll = !v && btn.classList.contains('chip--all');
+        var match = slug ? v === slug : isAll;
+        btn.classList.toggle('is-active', !!match);
+      });
+    }
+
+    function applyFilter(slug) {
+      var items = grid.querySelectorAll('.blog-wrap');
+      items.forEach(function (item) {
+        var cats = (item.getAttribute('data-cats') || '').split(',').filter(Boolean);
+        var show = !slug || cats.indexOf(slug) !== -1;
+        item.style.display = show ? '' : 'none';
+      });
+      setActive(slug);
+    }
+
+    filters.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!(t instanceof HTMLElement)) return;
+      var btn = t.closest('.chip');
+      if (!btn) return;
+      var slug = btn.getAttribute('data-category') || '';
+      var url = new URL(window.location.href);
+      if (slug) url.searchParams.set('category', slug);
+      else url.searchParams.delete('category');
+      window.history.replaceState({}, '', url.toString());
+      applyFilter(slug);
+    });
+
+    window.addEventListener('popstate', function () {
+      applyFilter(slugFromSearch());
+    });
+
+    applyFilter(slugFromSearch());
+  })();
+</script>
+
+<style>
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main {
+    padding-block: var(--space-12);
+    flex: 1;
+  }
+
+  .page-head {
+    margin-bottom: var(--space-8);
+  }
+
+  .page-head h1 {
+    font-size: var(--text-4xl);
+  }
+
+  .page-head code {
+    font-size: var(--text-sm);
+    background: #f1f5f9;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+
+  .chip {
+    border: 1px solid var(--color-border-strong);
+    background: #fff;
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    padding: var(--space-2) var(--space-4);
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .chip:hover {
+    border-color: var(--color-accent);
+  }
+
+  .chip.is-active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+  }
+
+  .blog-wrap {
+    min-width: 0;
+  }
+</style>

@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { getAllProducts, getCategories } from '../../lib/woocommerce';
+
+const categories = await getCategories().catch(() => []);
+const products = await getAllProducts().catch(() => []);
+
+const title = 'Products';
+const description = 'Browse Sunwe Vehicle heavy-duty trucks and special vehicles. Request a quote by WhatsApp or contact form — no online pricing.';
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/products">
+  <div class="page">
+    <Nav />
+    <main class="main">
+      <div class="container">
+        <header class="page-head">
+          <h1>Products</h1>
+        </header>
+
+        <div class="filters" id="product-filters" role="group" aria-label="Filter by category">
+          <button type="button" class="chip chip--all is-active" data-category="">All categories</button>
+          {categories.map((c) => (
+            <button type="button" class="chip" data-category={c.slug}>
+              {c.name}
+            </button>
+          ))}
+        </div>
+
+        {products.length === 0 ? (
+          <p class="muted">No products found.</p>
+        ) : (
+          <div class="grid-cards" id="product-grid">
+            {products.map((p) => (
+              <div class="product-wrap" data-cats={p.categories.map((c) => c.slug).join(',')}>
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+    <Footer />
+    <WhatsAppFloat />
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  (function () {
+    var grid = document.getElementById('product-grid');
+    var filters = document.getElementById('product-filters');
+    if (!grid || !filters) return;
+
+    function slugFromSearch() {
+      var q = new URLSearchParams(window.location.search);
+      return q.get('category') || '';
+    }
+
+    function setActive(slug) {
+      var buttons = filters.querySelectorAll('.chip');
+      buttons.forEach(function (btn) {
+        var v = btn.getAttribute('data-category') || '';
+        var isAll = !v && btn.classList.contains('chip--all');
+        var match = slug ? v === slug : isAll;
+        btn.classList.toggle('is-active', !!match);
+      });
+    }
+
+    function applyFilter(slug) {
+      var items = grid.querySelectorAll('.product-wrap');
+      items.forEach(function (item) {
+        var cats = (item.getAttribute('data-cats') || '').split(',').filter(Boolean);
+        var show = !slug || cats.indexOf(slug) !== -1;
+        item.style.display = show ? '' : 'none';
+      });
+      setActive(slug);
+    }
+
+    filters.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!(t instanceof HTMLElement)) return;
+      var btn = t.closest('.chip');
+      if (!btn) return;
+      var slug = btn.getAttribute('data-category') || '';
+      var url = new URL(window.location.href);
+      if (slug) url.searchParams.set('category', slug);
+      else url.searchParams.delete('category');
+      window.history.replaceState({}, '', url.toString());
+      applyFilter(slug);
+    });
+
+    window.addEventListener('popstate', function () {
+      applyFilter(slugFromSearch());
+    });
+
+    applyFilter(slugFromSearch());
+  })();
+</script>
+
+<style>
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main {
+    padding-block: var(--space-12);
+    flex: 1;
+  }
+
+  .page-head {
+    margin-bottom: var(--space-8);
+  }
+
+  .page-head h1 {
+    font-size: var(--text-4xl);
+  }
+
+  .page-head code {
+    font-size: var(--text-sm);
+    background: #f1f5f9;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+
+  .chip {
+    border: 1px solid var(--color-border-strong);
+    background: #fff;
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    padding: var(--space-2) var(--space-4);
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .chip:hover {
+    border-color: var(--color-accent);
+  }
+
+  .chip.is-active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+  }
+
+  .product-wrap {
+    min-width: 0;
+  }
+</style>

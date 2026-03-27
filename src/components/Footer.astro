@@ -1,0 +1,253 @@
+---
+const year = new Date().getFullYear();
+const wa = import.meta.env.WA_NUMBER;
+const waDigits = String(wa ?? '').replace(/\D/g, '');
+const waLink = waDigits ? `https://wa.me/${waDigits}` : '#';
+const email = 'info@sunwevehicle.com';
+---
+
+<footer class="sw-footer">
+  <div class="container sw-footer__grid">
+    <div>
+      <a class="sw-footer__brand" href="/">
+        <img src="/brand/logo-footer.png" width="140" height="40" alt="SUNWE VEHICLE" />
+      </a>
+      <p class="sw-footer__lead">
+        JINAN SUNWE VEHICLE CO., LTD. — Your trusted truck export expert. Professional truck superstructure manufacturing sales window, providing one-stop truck business solutions.
+      </p>
+      <div class="sw-footer__social" aria-label="Social">
+        <a href="#" class="sw-footer__soc" aria-label="Facebook">f</a>
+        <a href="#" class="sw-footer__soc" aria-label="X">𝕏</a>
+        <a href="#" class="sw-footer__soc" aria-label="LinkedIn">in</a>
+        <a href="https://www.youtube.com/@sunwevehicle" class="sw-footer__soc" target="_blank" rel="noopener noreferrer" aria-label="YouTube">▶</a>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="sw-footer__heading">Quick Links</h3>
+      <ul class="sw-footer__links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/videos">Video</a></li>
+        <li><a href="/about-us">About Us</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="sw-footer__heading">Contact Info</h3>
+      <ul class="sw-footer__contact">
+        <li>
+          <span class="sw-footer__icon" aria-hidden="true">▣</span>
+          <span>
+            E39, Building 3, Aosheng Mansion,<br />
+            No. 1166 Xinluo Street, Shunhua Road<br />
+            Sub-district, Jinan Area of China (Shandong)<br />
+            Pilot Free Trade Zone
+          </span>
+        </li>
+        <li>
+          <span class="sw-footer__icon" aria-hidden="true">☎</span>
+          <a href={waLink} target="_blank" rel="noopener noreferrer">WhatsApp {waDigits ? `+${waDigits}` : ''}</a>
+        </li>
+        <li>
+          <span class="sw-footer__icon" aria-hidden="true">✉</span>
+          <a href={`mailto:${email}`}>{email}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="sw-footer__heading">WhatsApp QR</h3>
+      <div class="sw-footer__qr">
+        <img src="/brand/whatsapp-qr.jpg" alt="WhatsApp QR Code" width="128" height="128" />
+      </div>
+      <p class="sw-footer__qr-note">Scan to chat with us on WhatsApp</p>
+    </div>
+  </div>
+
+  <div class="sw-footer__bar">
+    <div class="container sw-footer__bar-inner">
+      <p>© {year} JINAN SUNWE VEHICLE CO., LTD. All Rights Reserved.</p>
+      <div class="sw-footer__legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .sw-footer {
+    background: var(--sw-shell);
+    color: #fff;
+    margin-top: auto;
+  }
+
+  .sw-footer__grid {
+    display: grid;
+    gap: var(--space-10);
+    padding-block: var(--space-12);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .sw-footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .sw-footer__grid {
+      grid-template-columns: 1.2fr 0.8fr 1fr 0.9fr;
+      gap: var(--space-12);
+    }
+  }
+
+  .sw-footer__brand img {
+    height: 2.5rem;
+    width: auto;
+    max-width: 160px;
+  }
+
+  .sw-footer__lead {
+    margin: var(--space-4) 0 var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--sw-muted);
+    line-height: 1.65;
+  }
+
+  .sw-footer__social {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  .sw-footer__soc {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-md);
+    background: var(--sw-panel);
+    display: grid;
+    place-items: center;
+    font-size: var(--text-xs);
+    color: #e5e7eb;
+    text-decoration: none;
+  }
+
+  .sw-footer__soc:hover {
+    background: var(--sw-accent);
+    color: #fff;
+  }
+
+  .sw-footer__heading {
+    margin: 0 0 var(--space-6);
+    font-size: var(--text-lg);
+    color: #fff;
+    border-left: 4px solid var(--sw-accent);
+    padding-left: var(--space-3);
+  }
+
+  .sw-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .sw-footer__links a {
+    font-size: var(--text-sm);
+    color: var(--sw-muted);
+    text-decoration: none;
+  }
+
+  .sw-footer__links a:hover {
+    color: var(--sw-accent);
+  }
+
+  .sw-footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .sw-footer__contact li {
+    display: flex;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--sw-muted);
+  }
+
+  .sw-footer__contact a {
+    color: var(--sw-muted);
+    text-decoration: none;
+  }
+
+  .sw-footer__contact a:hover {
+    color: var(--sw-accent);
+  }
+
+  .sw-footer__icon {
+    color: var(--sw-accent);
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .sw-footer__qr {
+    background: #fff;
+    padding: var(--space-2);
+    border-radius: var(--radius-lg);
+    display: inline-block;
+    margin-bottom: var(--space-3);
+  }
+
+  .sw-footer__qr img {
+    width: 8rem;
+    height: 8rem;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    display: block;
+  }
+
+  .sw-footer__qr-note {
+    font-size: var(--text-xs);
+    color: var(--sw-muted);
+    margin: 0;
+  }
+
+  .sw-footer__bar {
+    border-top: 1px solid var(--sw-border);
+  }
+
+  .sw-footer__bar-inner {
+    padding-block: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: center;
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--sw-muted);
+  }
+
+  @media (min-width: 768px) {
+    .sw-footer__bar-inner {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+
+  .sw-footer__legal {
+    display: flex;
+    gap: var(--space-6);
+  }
+
+  .sw-footer__legal a {
+    color: var(--sw-muted);
+    text-decoration: none;
+  }
+
+  .sw-footer__legal a:hover {
+    color: var(--sw-accent);
+  }
+</style>

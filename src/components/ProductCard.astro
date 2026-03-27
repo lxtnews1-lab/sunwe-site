@@ -1,0 +1,102 @@
+---
+import type { Product } from '../lib/woocommerce';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const img = product.images[0]?.src;
+const alt = product.images[0]?.alt || product.name;
+
+const stripTags = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+const excerpt =
+  stripTags(product.short_description).slice(0, 140) ||
+  stripTags(product.description).slice(0, 140) ||
+  'Heavy-duty vehicle — contact us for specifications.';
+---
+
+<article class="pcard" data-category-slugs={product.categories.map((c) => c.slug).join(',')}>
+  <a class="pcard__media" href={`/products/${product.id}`}>
+    {img ? (
+      <img src={img} alt={alt} width="640" height="400" loading="lazy" />
+    ) : (
+      <div class="pcard__ph" role="img" aria-label={alt} />
+    )}
+  </a>
+  <div class="pcard__body">
+    <h3 class="pcard__title">
+      <a href={`/products/${product.id}`}>{product.name}</a>
+    </h3>
+    <p class="pcard__excerpt">{excerpt}</p>
+    <a class="btn btn--sw-gradient btn--block" href={`/products/${product.id}`}>Inquire Now</a>
+  </div>
+</article>
+
+<style>
+  .pcard {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: #fff;
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-md);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .pcard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .pcard__media {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #f1f5f9;
+  }
+
+  .pcard__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pcard__ph {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  }
+
+  .pcard__body {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    flex: 1;
+  }
+
+  .pcard__title {
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+
+  .pcard__title a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .pcard__title a:hover {
+    color: var(--sw-accent);
+  }
+
+  .pcard__excerpt {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+    flex: 1;
+  }
+</style>
