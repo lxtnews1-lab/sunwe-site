@@ -3,7 +3,7 @@
  * All product payloads intentionally omit any price-related fields.
  */
 
-const WC_BASE = 'https://sunwevehicle.com/wp-json/wc/v3';
+const WC_BASE = `${import.meta.env.WP_API_URL || 'https://sunwevehicle.com'}/wp-json/wc/v3`;
 
 function getAuthHeader(): string {
   const key = import.meta.env.WC_KEY;

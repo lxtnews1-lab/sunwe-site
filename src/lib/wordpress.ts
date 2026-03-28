@@ -2,7 +2,7 @@
  * WordPress REST API (public posts & categories).
  */
 
-const WP_BASE = 'https://sunwevehicle.com/wp-json/wp/v2';
+const WP_BASE = `${import.meta.env.WP_API_URL || 'https://sunwevehicle.com'}/wp-json/wp/v2`;
 
 export interface WpCategory {
   id: number;
