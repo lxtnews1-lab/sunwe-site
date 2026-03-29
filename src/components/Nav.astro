@@ -243,12 +243,12 @@ const contactActive =
       <!-- Google Translate Language Switcher -->
       <div class="sw-nav__lang">
         <select class="sw-nav__lang-select" id="google-lang-selector" aria-label="Select language">
-          <option value="en" selected>🇬🇧 EN</option>
-          <option value="zh-CN">🇨🇳 中文</option>
-          <option value="es">🇪🇸 ES</option>
-          <option value="ar">🇸🇦 AR</option>
-          <option value="fr">🇫🇷 FR</option>
-          <option value="ru">🇷🇺 RU</option>
+          <option value="en|en" selected>🇬🇧 EN</option>
+          <option value="en|zh-CN">🇨🇳 中文</option>
+          <option value="en|es">🇪🇸 ES</option>
+          <option value="en|ar">🇸🇦 AR</option>
+          <option value="en|fr">🇫🇷 FR</option>
+          <option value="en|ru">🇷🇺 RU</option>
         </select>
       </div>
       
@@ -288,12 +288,12 @@ const contactActive =
       <div class="sw-nav__mobile-lang">
         <div class="sw-nav__mobile-lang-title">🌐 Language</div>
         <select class="sw-nav__mobile-lang-select" id="google-lang-selector-mobile" aria-label="Select language">
-          <option value="en" selected>🇬🇧 English</option>
-          <option value="zh-CN">🇨🇳 中文</option>
-          <option value="es">🇪🇸 Español</option>
-          <option value="ar">🇸🇦 العربية</option>
-          <option value="fr">🇫🇷 Français</option>
-          <option value="ru">🇷🇺 Русский</option>
+          <option value="en|en" selected>🇬🇧 English</option>
+          <option value="en|zh-CN">🇨🇳 中文</option>
+          <option value="en|es">🇪🇸 Español</option>
+          <option value="en|ar">🇸🇦 العربية</option>
+          <option value="en|fr">🇫🇷 Français</option>
+          <option value="en|ru">🇷🇺 Русский</option>
         </select>
       </div>
       
@@ -329,11 +329,12 @@ const contactActive =
     var mobileSelect = document.getElementById('google-lang-selector-mobile');
     
     function handleLanguageChange(select) {
-      var lang = select.value;
+      var langPair = select.value;
+      var targetLang = langPair.split('|')[1];
       
       // Call the global translate function
       if (typeof window.changeGoogleTranslateLanguage === 'function') {
-        window.changeGoogleTranslateLanguage(lang);
+        window.changeGoogleTranslateLanguage(targetLang);
       }
       
       // Sync the other selector
