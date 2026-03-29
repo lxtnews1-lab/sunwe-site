@@ -21,8 +21,9 @@ const {
   schema
 } = Astro.props;
 
-const site = Astro.site?.toString().replace(/\/$/, '') ?? 'https://sunwevehicle.com';
-const canonical = canonicalPath ? `${site}${canonicalPath.startsWith('/') ? '' : '/'}${canonicalPath}` : site;
+const site = 'https://sunwevehicle.com';
+const path = canonicalPath ?? Astro.url.pathname;
+const canonical = `${site}${path.startsWith('/') ? path : '/' + path}`;
 const fullTitle = title.includes('Sunwe Vehicle') ? title : `${title} | Sunwe Vehicle`;
 
 // Default Organization Schema
