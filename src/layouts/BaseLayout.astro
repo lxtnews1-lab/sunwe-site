@@ -111,10 +111,11 @@ const finalSchema = schema || defaultSchema;
     <!-- DNS Prefetch and Preconnect -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-    <link rel="dns-prefetch" href="https://sunwevehicle.com" />
+    <link rel="dns-prefetch" href="https://wp.sunwevehicle.com" />
+    <link rel="dns-prefetch" href="https://translate.googleapis.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://sunwevehicle.com" />
+    <link rel="preconnect" href="https://wp.sunwevehicle.com" />
     
     <!-- Preload Critical Resources -->
     <link rel="preload" href="/brand/logo-nav.png" as="image" type="image/png" fetchpriority="high" />
@@ -172,7 +173,7 @@ const finalSchema = schema || defaultSchema;
     
     <slot />
     
-    <!-- Google Translate with direct function -->
+    <!-- Google Translate with lazy loading -->
     <script is:inline>
       // Global translate function
       window.changeGoogleTranslateLanguage = function(langCode) {
@@ -205,8 +206,27 @@ const finalSchema = schema || defaultSchema;
           autoDisplay: false
         }, 'google_translate_element');
       }
+      
+      // Lazy load Google Translate after page load
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(function() {
+          var script = document.createElement('script');
+          script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+          script.async = true;
+          document.body.appendChild(script);
+        }, { timeout: 2000 });
+      } else {
+        // Fallback for older browsers
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            var script = document.createElement('script');
+            script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            script.async = true;
+            document.body.appendChild(script);
+          }, 1000);
+        });
+      }
     </script>
-    <script is:inline src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     
     <!-- Disable right-click on images -->
     <script is:inline>

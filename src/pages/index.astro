@@ -107,7 +107,16 @@ const combinedSchema = [websiteSchema, localBusinessSchema];
     <main>
       <section class="home-hero" aria-label="Hero Banner">
         <div class="home-hero__bg">
-          <img src={heroImage} alt="" width="1920" height="1080" fetchpriority="high" />
+          <img 
+            src={heroImage} 
+            alt="" 
+            width="1920" 
+            height="1080" 
+            fetchpriority="high"
+            decoding="async"
+            srcset={`${heroImage.replace('.png', '-400w.png')} 400w, ${heroImage.replace('.png', '-800w.png')} 800w, ${heroImage.replace('.png', '-1200w.png')} 1200w, ${heroImage} 1920w`}
+            sizes="100vw"
+          />
           <div class="home-hero__overlay"></div>
         </div>
         <div class="container home-hero__content">
