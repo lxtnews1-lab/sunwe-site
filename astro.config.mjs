@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import critters from 'critters';
 
 export default defineConfig({
   site: 'https://sunwevehicle.com',
@@ -30,9 +31,24 @@ export default defineConfig({
     },
   },
   
-  // Build options
+  // Vite configuration
+  vite: {
+    build: {
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor': [],
+          },
+        },
+      },
+    },
+  },
+
+  // Build options - inline stylesheets to avoid render-blocking
   build: {
     format: 'directory',
+    inlineStylesheets: 'always',
   },
   
   // Server options

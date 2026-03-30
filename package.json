@@ -15,6 +15,7 @@
     "astro": "6.0.8"
   },
   "devDependencies": {
+    "critters": "^0.0.23",
     "typescript": "^5.7.2"
   }
 }
