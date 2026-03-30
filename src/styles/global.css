@@ -393,7 +393,7 @@ ul {
 }
 
 
-/* Google Translate toolbar hide */
+/* Google Translate toolbar - COMPLETE HIDE */
 .goog-te-banner-frame,
 .goog-te-banner-frame.skiptranslate,
 .goog-te-balloon-frame,
@@ -404,37 +404,59 @@ ul {
 .goog-text-highlight,
 .skiptranslate,
 iframe.goog-te-banner-frame,
-body > .skiptranslate {
+body > .skiptranslate,
+.goog-te-banner,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-aZ2wEe-OiiCO {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   height: 0 !important;
   width: 0 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  max-height: 0 !important;
+  max-width: 0 !important;
   border: none !important;
   margin: 0 !important;
   padding: 0 !important;
+  background: transparent !important;
   position: absolute !important;
   top: -9999px !important;
   left: -9999px !important;
   z-index: -9999 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(100%) !important;
 }
 
-/* Remove body top offset from Google Translate */
+/* Remove Google Translate body shift completely */
 html,
-body {
-  top: 0 !important;
+body,
+body > .page {
+  position: static !important;
+  top: auto !important;
   margin-top: 0 !important;
   padding-top: 0 !important;
 }
 
-/* Hide Google Translate elements completely */
+/* Force body to start at top */
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hide all Google Translate branding */
 .goog-logo-link,
 .goog-logo-link:link,
 .goog-logo-link:visited,
 .goog-logo-link:hover,
 .goog-logo-link:active,
 .goog-te-gadget > span,
-.goog-te-gadget > div:not(.goog-te-combo) {
+.goog-te-gadget > div:not(.goog-te-combo),
+.VIpgJd-ZVi9od-l4eHX-hSRGPd,
+.VIpgJd-ZVi9od-Sx9Kwc,
+.VIpgJd-ZVi9od-Sx9Kwc * {
   display: none !important;
 }
 
@@ -443,9 +465,13 @@ body {
   font-size: 0 !important;
   line-height: 0 !important;
   height: 0 !important;
+  width: 0 !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 .goog-te-gadget .goog-te-combo {
   color: #000;
   font-size: 14px;
+  background: transparent;
 }
