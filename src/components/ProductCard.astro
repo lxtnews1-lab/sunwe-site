@@ -6,9 +6,7 @@ interface Props {
 }
 
 const { product } = Astro.props;
-const originalImg = product.images[0]?.src;
-// Use WebP version if available
-const img = originalImg ? `${originalImg}.webp` : null;
+const img = product.images[0]?.src;
 const alt = product.images[0]?.alt || product.name;
 
 const stripTags = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
