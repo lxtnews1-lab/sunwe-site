@@ -495,7 +495,8 @@ const contactActive =
     position: relative;
   }
 
-  .sw-nav__lang-select {
+  /* Google Translate dropdown styling */
+  .sw-nav__lang .goog-te-combo {
     appearance: none;
     -webkit-appearance: none;
     background: rgba(255, 255, 255, 0.05);
@@ -510,22 +511,34 @@ const contactActive =
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.5rem center;
+    min-width: 100px;
   }
 
-  .sw-nav__lang-select:hover {
+  .sw-nav__lang .goog-te-combo:hover {
     background-color: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.25);
   }
 
-  .sw-nav__lang-select:focus {
+  .sw-nav__lang .goog-te-combo:focus {
     outline: none;
     border-color: var(--sw-accent);
   }
 
-  .sw-nav__lang-select option {
+  .sw-nav__lang .goog-te-combo option {
     background: var(--sw-shell);
     color: #fff;
     padding: 0.5rem;
+  }
+
+  /* Hide Google Translate branding */
+  .sw-nav__lang .goog-logo-link,
+  .sw-nav__lang .goog-te-gadget > span {
+    display: none !important;
+  }
+
+  .sw-nav__lang .goog-te-gadget {
+    color: transparent !important;
+    font-size: 0 !important;
   }
 
   @media (max-width: 640px) {
@@ -680,7 +693,8 @@ const contactActive =
     letter-spacing: 0.05em;
   }
 
-  .sw-nav__mobile-lang-select {
+  /* Google Translate mobile dropdown */
+  .sw-nav__mobile-lang .goog-te-combo {
     appearance: none;
     -webkit-appearance: none;
     background: rgba(255, 255, 255, 0.05);
@@ -697,21 +711,32 @@ const contactActive =
     background-position: right 1rem center;
   }
 
-  .sw-nav__mobile-lang-select:hover {
+  .sw-nav__mobile-lang .goog-te-combo:hover {
     background-color: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.25);
   }
 
-  .sw-nav__mobile-lang-select:focus {
+  .sw-nav__mobile-lang .goog-te-combo:focus {
     outline: none;
     border-color: var(--sw-accent);
   }
 
-  .sw-nav__mobile-lang-select option {
+  .sw-nav__mobile-lang .goog-te-combo option {
     background: var(--sw-shell);
     color: #fff;
     padding: 0.75rem;
     font-size: var(--text-base);
+  }
+
+  /* Hide Google Translate branding in mobile */
+  .sw-nav__mobile-lang .goog-logo-link,
+  .sw-nav__mobile-lang .goog-te-gadget > span {
+    display: none !important;
+  }
+
+  .sw-nav__mobile-lang .goog-te-gadget {
+    color: transparent !important;
+    font-size: 0 !important;
   }
 
   @media (min-width: 640px) {
