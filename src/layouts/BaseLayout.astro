@@ -157,64 +157,20 @@ const finalSchema = schema || defaultSchema;
     </style>
   </head>
   <body>
-    <div id="google_translate_element" style="display: none;"></div>
-    
     <slot />
     
-    <!-- Google Translate with lazy loading -->
+    <!-- Google Translate -->
     <script is:inline>
-      // Global translate function
-      window.changeGoogleTranslateLanguage = function(langCode) {
-        if (!langCode) return;
-        
-        // Try to find and update the Google Translate combo box
-        var combo = document.querySelector('.goog-te-combo');
-        if (combo) {
-          combo.value = langCode;
-          combo.dispatchEvent(new Event('change'));
-          return;
-        }
-        
-        // Fallback: try again after delay
-        setTimeout(function() {
-          var comboRetry = document.querySelector('.goog-te-combo');
-          if (comboRetry) {
-            comboRetry.value = langCode;
-            comboRetry.dispatchEvent(new Event('change'));
-          }
-        }, 500);
-      };
-      
-      // Initialize Google Translate
       function googleTranslateElementInit() {
+        // Desktop language selector
         new google.translate.TranslateElement({
           pageLanguage: 'en',
-          includedLanguages: 'en,zh-CN,es,ar,fr,ru',
-          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-          autoDisplay: false
+          includedLanguages: 'ar,es,fr,ru,zh-CN',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
         }, 'google_translate_element');
       }
-      
-      // Lazy load Google Translate after page load
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(function() {
-          var script = document.createElement('script');
-          script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-          script.async = true;
-          document.body.appendChild(script);
-        }, { timeout: 2000 });
-      } else {
-        // Fallback for older browsers
-        window.addEventListener('load', function() {
-          setTimeout(function() {
-            var script = document.createElement('script');
-            script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-            script.async = true;
-            document.body.appendChild(script);
-          }, 1000);
-        });
-      }
     </script>
+    <script is:inline src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     
     <!-- Disable right-click on images -->
     <script is:inline>
