@@ -19,9 +19,9 @@ const dateStr = date.toLocaleDateString('en-US', {
 ---
 
 <article class="bcard">
-  <a class="bcard__media" href={`/blog/${post.slug}`}>
+  <a class="bcard__media" href={`/blog/${post.slug}`} aria-label={`Read article: ${title}`}>
     {img ? (
-      <img src={img} alt="" width="640" height="360" loading="lazy" />
+      <img src={img} alt={title} width="640" height="360" loading="lazy" />
     ) : (
       <div class="bcard__ph" aria-hidden="true" />
     )}
@@ -113,13 +113,14 @@ const dateStr = date.toLocaleDateString('en-US', {
 
   .bcard__more {
     font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--sw-accent);
+    font-weight: var(--font-bold);
+    color: #b91c1c;
     text-decoration: none;
     margin-top: auto;
   }
 
   .bcard__more:hover {
+    color: #991b1b;
     text-decoration: underline;
   }
 </style>
