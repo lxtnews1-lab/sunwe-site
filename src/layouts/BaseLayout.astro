@@ -151,24 +151,12 @@ const finalSchema = schema || defaultSchema;
         display: block;
       }
       .sw-nav { visibility: visible !important; }
-      .skip-link {
-        position: absolute;
-        top: -40px;
-        left: 0;
-        background: #ff4438;
-        color: white;
-        padding: 8px;
-        text-decoration: none;
-        z-index: 100;
-      }
-      .skip-link:focus { top: 0; }
       .goog-te-banner-frame { display: none !important; }
       body { top: 0 !important; }
       .goog-te-menu-frame { display: none !important; }
     </style>
   </head>
   <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div id="google_translate_element" style="display: none;"></div>
     
     <slot />
