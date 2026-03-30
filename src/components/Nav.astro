@@ -328,15 +328,44 @@ const contactActive =
     var desktopSelect = document.getElementById('google-lang-selector');
     var mobileSelect = document.getElementById('google-lang-selector-mobile');
     
-    // Ensure Google Translate is loaded before changing language
-    function ensureGoogleTranslate(callback) {
-      if (typeof google !== 'undefined' && google.translate && document.querySelector('.goog-te-combo')) {
-        callback();
-        return;
+    // Direct translate function that works with Google Translate
+    function doGTranslate(langPair) {
+      if (!langPair) return;
+      var lang = langPair.split('|')[1];
+      
+      // Try multiple methods to trigger translation
+      function tryTranslate() {
+        var combo = document.querySelector('.goog-te-combo');
+        if (combo) {
+          combo.value = lang;
+          combo.dispatchEvent(new Event('change'));
+          return true;
+        }
+        return false;
       }
       
-      // If not loaded, load it now
-      if (!window.googleTranslateElementInit) {
+      // Try immediately
+      if (tryTranslate()) return;
+      
+      // Try after delay if Google Translate is still loading
+      setTimeout(function() {
+        tryTranslate();
+      }, 300);
+      
+      // Try again after longer delay
+      setTimeout(function() {
+        tryTranslate();
+      }, 1000);
+    }
+    
+    // Load Google Translate immediately on first interaction
+    function loadGoogleTranslate() {
+      if (window.googleTranslateElementInit && document.querySelector('.goog-te-combo')) {
+        return; // Already loaded
+      }
+      
+      // Load the script
+      if (!document.getElementById('google-translate-script')) {
         window.googleTranslateElementInit = function() {
           new google.translate.TranslateElement({
             pageLanguage: 'en',
@@ -344,33 +373,24 @@ const contactActive =
             layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
             autoDisplay: false
           }, 'google_translate_element');
-          
-          // Wait for combo to be created
-          setTimeout(callback, 100);
         };
         
         var script = document.createElement('script');
+        script.id = 'google-translate-script';
         script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
         script.async = true;
         document.body.appendChild(script);
-      } else {
-        // Already loading, wait for it
-        setTimeout(function() {
-          ensureGoogleTranslate(callback);
-        }, 200);
       }
     }
     
     function handleLanguageChange(select) {
       var langPair = select.value;
-      var targetLang = langPair.split('|')[1];
       
-      ensureGoogleTranslate(function() {
-        // Call the global translate function
-        if (typeof window.changeGoogleTranslateLanguage === 'function') {
-          window.changeGoogleTranslateLanguage(targetLang);
-        }
-      });
+      // Load Google Translate first
+      loadGoogleTranslate();
+      
+      // Try to translate
+      doGTranslate(langPair);
       
       // Sync the other selector
       if (select === desktopSelect && mobileSelect) {
