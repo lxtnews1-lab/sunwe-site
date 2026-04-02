@@ -205,8 +205,9 @@ const combinedSchema = [websiteSchema, localBusinessSchema];
                   alt="SUNWE VEHICLE Factory Tour - Click to play"
                   width="1280"
                   height="720"
-                  loading="lazy"
+                  fetchpriority="high"
                   decoding="async"
+                  onerror="this.src='https://img.youtube.com/vi/DRZiD8VU4bA/sddefault.jpg'"
                 />
                 <div class="home-video__play-btn" aria-hidden="true">▶</div>
               </div>
@@ -718,7 +719,7 @@ const combinedSchema = [websiteSchema, localBusinessSchema];
 
   .home-cta__text {
     margin: 0 0 var(--space-6);
-    color: #9ca3af;
+    color: #d1d5db;
     font-size: clamp(0.95rem, 2vw, 1.125rem);
     line-height: 1.65;
   }
@@ -732,6 +733,6 @@ const combinedSchema = [websiteSchema, localBusinessSchema];
   .home-cta__note {
     margin: var(--space-4) 0 0;
     font-size: var(--text-xs);
-    color: #6b7280;
+    color: #d1d5db;
   }
 </style>

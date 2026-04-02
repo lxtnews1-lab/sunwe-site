@@ -7,7 +7,7 @@
   --sw-accent: #ff4438;
   --sw-accent-mid: #ff5544;
   --sw-border: #374151;
-  --sw-muted: #9ca3af;
+  --sw-muted: #d1d5db;
   --sw-page: #f9fafb;
 
   /* Map legacy tokens used across pages */
@@ -19,7 +19,7 @@
   --color-bg-elevated: #ffffff;
   --color-bg-dark: var(--sw-shell);
   --color-text: #111827;
-  --color-text-muted: #6b7280;
+  --color-text-muted: #4b5563;
   --color-text-inverse: #ffffff;
   --color-border: #e5e7eb;
   --color-border-strong: #d1d5db;
@@ -393,14 +393,24 @@ ul {
 }
 
 
-/* Google Translate toolbar - COMPLETE HIDE */
+/* Base body styles */
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ============================================
+   GOOGLE TRANSLATE - GLOBAL OVERRIDES
+   These must be global to affect dynamically injected elements
+   ============================================ */
+
+/* Completely hide Google Translate toolbar and branding */
 .goog-te-banner-frame,
 .goog-te-banner-frame.skiptranslate,
+.goog-te-menu-frame,
 .goog-te-balloon-frame,
 #goog-gt-tt,
-.goog-te-menu-frame,
 .goog-tooltip,
-.goog-tooltip:hover,
 .goog-text-highlight,
 .skiptranslate,
 iframe.goog-te-banner-frame,
@@ -413,65 +423,51 @@ body > .skiptranslate,
   opacity: 0 !important;
   height: 0 !important;
   width: 0 !important;
-  min-height: 0 !important;
-  min-width: 0 !important;
-  max-height: 0 !important;
-  max-width: 0 !important;
   border: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  background: transparent !important;
   position: absolute !important;
   top: -9999px !important;
   left: -9999px !important;
   z-index: -9999 !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  clip-path: inset(100%) !important;
+  pointer-events: none !important;
 }
 
-/* Remove Google Translate body shift completely */
-html,
-body,
-body > .page {
+/* Prevent body shift from Google Translate */
+body {
+  top: 0 !important;
   position: static !important;
-  top: auto !important;
   margin-top: 0 !important;
   padding-top: 0 !important;
 }
 
-/* Force body to start at top */
-body {
-  margin: 0 !important;
-  padding: 0 !important;
+html {
+  position: static !important;
+  top: auto !important;
 }
 
-/* Hide all Google Translate branding */
-.goog-logo-link,
-.goog-logo-link:link,
-.goog-logo-link:visited,
-.goog-logo-link:hover,
-.goog-logo-link:active,
-.goog-te-gadget > span,
-.goog-te-gadget > div:not(.goog-te-combo),
-.VIpgJd-ZVi9od-l4eHX-hSRGPd,
-.VIpgJd-ZVi9od-Sx9Kwc,
-.VIpgJd-ZVi9od-Sx9Kwc * {
+/* Hide Google Translate gadget branding but keep select functional */
+.goog-te-gadget {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+}
+
+.goog-te-gadget > *:not(select):not(.goog-te-combo) {
   display: none !important;
 }
 
-.goog-te-gadget {
-  color: transparent !important;
-  font-size: 0 !important;
-  line-height: 0 !important;
-  height: 0 !important;
-  width: 0 !important;
-  border: none !important;
-  background: transparent !important;
+.goog-te-gadget img,
+.goog-logo-link,
+.goog-te-gadget-icon {
+  display: none !important;
 }
 
-.goog-te-gadget .goog-te-combo {
-  color: #000;
-  font-size: 14px;
-  background: transparent;
+/* Style the native Google Translate select to be invisible but functional */
+.goog-te-combo {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
 }

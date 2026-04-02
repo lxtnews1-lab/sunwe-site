@@ -112,7 +112,6 @@ const finalSchema = schema || defaultSchema;
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="dns-prefetch" href="https://wp.sunwevehicle.com" />
-    <link rel="dns-prefetch" href="https://translate.googleapis.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://wp.sunwevehicle.com" />
@@ -151,21 +150,69 @@ const finalSchema = schema || defaultSchema;
         display: block;
       }
       .sw-nav { visibility: visible !important; }
-      .goog-te-banner-frame { display: none !important; }
-      body { top: 0 !important; }
-      .goog-te-menu-frame { display: none !important; }
+      
+      /* Hide Google Translate Toolbar Completely */
+      .goog-te-banner-frame,
+      .goog-te-banner-frame.skiptranslate,
+      .goog-te-menu-frame,
+      .goog-te-balloon-frame,
+      #goog-gt-tt,
+      .goog-tooltip,
+      .goog-text-highlight,
+      .skiptranslate,
+      iframe.goog-te-banner-frame,
+      body > .skiptranslate,
+      .goog-te-banner,
+      .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+      .VIpgJd-ZVi9od-aZ2wEe-OiiCO,
+      .goog-te-combo ~ img,
+      .goog-te-gadget-icon,
+      .goog-te-gadget-simple img,
+      .goog-te-gadget-simple span {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        width: 0 !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        top: -9999px !important;
+        left: -9999px !important;
+        z-index: -9999 !important;
+        pointer-events: none !important;
+      }
+      
+      body { 
+        top: 0 !important; 
+        position: static !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+      
+      html { 
+        position: static !important; 
+        top: auto !important;
+      }
     </style>
   </head>
   <body>
     <slot />
     
-    <!-- Google Translate -->
+    <!-- Google Translate Script (will inject its own element) -->
     <script is:inline>
       function googleTranslateElementInit() {
-        // Desktop language selector
+        // Create container div
+        var container = document.createElement('div');
+        container.id = 'google_translate_element';
+        container.style.cssText = 'position:absolute;top:-9999px;left:-9999px;width:0;height:0;overflow:hidden;opacity:0;';
+        document.body.appendChild(container);
+        
+        // Initialize Google Translate
         new google.translate.TranslateElement({
           pageLanguage: 'en',
-          includedLanguages: 'ar,es,fr,ru,zh-CN',
+          includedLanguages: 'en,zh-CN,es,ar,fr,ru',
           layout: google.translate.TranslateElement.InlineLayout.SIMPLE
         }, 'google_translate_element');
       }

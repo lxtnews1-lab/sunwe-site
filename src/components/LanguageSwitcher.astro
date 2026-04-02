@@ -1,0 +1,267 @@
+---
+// Language Switcher Component - Final Stable Version
+---
+
+<div class="lang-switcher" id="langSwitcher" translate="no">
+  <button class="lang-btn" id="langBtn" type="button" translate="no">
+    <span class="lang-flag" id="currentFlag">🇬🇧</span>
+    <span class="lang-name" id="currentName">English</span>
+    <svg class="lang-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" translate="no">
+      <path d="M6 8L1 3h10z" fill="currentColor" translate="no"/>
+    </svg>
+  </button>
+  <div class="lang-dropdown" id="langDropdown" translate="no">
+    <button class="lang-option" data-lang="en" type="button" translate="no">
+      <span class="lang-option-flag" translate="no">🇬🇧</span>
+      <span class="lang-option-name" translate="no">English</span>
+      <span class="lang-check" translate="no">✓</span>
+    </button>
+    <button class="lang-option" data-lang="zh-CN" type="button" translate="no">
+      <span class="lang-option-flag" translate="no">🇨🇳</span>
+      <span class="lang-option-name" translate="no">中文</span>
+      <span class="lang-check" translate="no">✓</span>
+    </button>
+    <button class="lang-option" data-lang="es" type="button" translate="no">
+      <span class="lang-option-flag" translate="no">🇪🇸</span>
+      <span class="lang-option-name" translate="no">Español</span>
+      <span class="lang-check" translate="no">✓</span>
+    </button>
+    <button class="lang-option" data-lang="ar" type="button" translate="no">
+      <span class="lang-option-flag" translate="no">🇸🇦</span>
+      <span class="lang-option-name" translate="no">العربية</span>
+      <span class="lang-check" translate="no">✓</span>
+    </button>
+    <button class="lang-option" data-lang="fr" type="button" translate="no">
+      <span class="lang-option-flag" translate="no">🇫🇷</span>
+      <span class="lang-option-name" translate="no">Français</span>
+      <span class="lang-check" translate="no">✓</span>
+    </button>
+    <button class="lang-option" data-lang="ru" type="button" translate="no">
+      <span class="lang-option-flag" translate="no">🇷🇺</span>
+      <span class="lang-option-name" translate="no">Русский</span>
+      <span class="lang-check" translate="no">✓</span>
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+(function() {
+  'use strict';
+  
+  // Language data - use textContent to avoid translation
+  var langData = {
+    'en': ['🇬🇧', 'English'],
+    'zh-CN': ['🇨🇳', '中文'],
+    'es': ['🇪🇸', 'Español'],
+    'ar': ['🇸🇦', 'العربية'],
+    'fr': ['🇫🇷', 'Français'],
+    'ru': ['🇷🇺', 'Русский']
+  };
+  
+  var currentLang = 'en';
+  var isOpen = false;
+  
+  // Elements
+  var btn = document.getElementById('langBtn');
+  var dropdown = document.getElementById('langDropdown');
+  var flag = document.getElementById('currentFlag');
+  var name = document.getElementById('currentName');
+  
+  function updateDisplay(lang) {
+    var data = langData[lang];
+    if (!data) return;
+    currentLang = lang;
+    if (flag) flag.textContent = data[0];
+    if (name) name.textContent = data[1];
+    
+    // Update active
+    document.querySelectorAll('.lang-option').forEach(function(opt) {
+      var isActive = opt.getAttribute('data-lang') === lang;
+      opt.classList.toggle('active', isActive);
+    });
+  }
+  
+  function setOpen(open) {
+    isOpen = open;
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (dropdown) {
+      dropdown.style.opacity = open ? '1' : '0';
+      dropdown.style.visibility = open ? 'visible' : 'hidden';
+      dropdown.style.transform = open ? 'translateY(0)' : 'translateY(-10px)';
+    }
+  }
+  
+  function getGTSelect() {
+    return document.querySelector('.goog-te-combo');
+  }
+  
+  function switchLang(lang) {
+    if (lang === currentLang) {
+      setOpen(false);
+      return;
+    }
+    
+    var select = getGTSelect();
+    if (select) {
+      select.value = lang;
+      select.dispatchEvent(new Event('change'));
+      updateDisplay(lang);
+      localStorage.setItem('preferred-lang', lang);
+    }
+    setOpen(false);
+  }
+  
+  // Event handlers
+  if (btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      setOpen(!isOpen);
+    });
+  }
+  
+  document.querySelectorAll('.lang-option').forEach(function(opt) {
+    opt.addEventListener('click', function(e) {
+      e.stopPropagation();
+      switchLang(this.getAttribute('data-lang'));
+    });
+  });
+  
+  document.addEventListener('click', function(e) {
+    if (isOpen && !document.getElementById('langSwitcher').contains(e.target)) {
+      setOpen(false);
+    }
+  });
+  
+  // Init
+  var saved = localStorage.getItem('preferred-lang') || 'en';
+  updateDisplay(saved);
+  
+  // Watch for GT changes
+  setInterval(function() {
+    var select = getGTSelect();
+    if (select && select.value !== currentLang) {
+      updateDisplay(select.value);
+      localStorage.setItem('preferred-lang', select.value);
+    }
+  }, 500);
+})();
+</script>
+
+<style>
+  .lang-switcher {
+    position: relative;
+    display: inline-block;
+  }
+
+  .lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    font-family: system-ui, -apple-system, sans-serif !important;
+  }
+
+  .lang-btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .lang-btn[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: #ff4438 !important;
+  }
+
+  .lang-flag {
+    font-size: 16px;
+  }
+
+  .lang-name {
+    white-space: nowrap;
+  }
+
+  .lang-arrow {
+    transition: transform 0.2s;
+    opacity: 0.7;
+  }
+
+  .lang-btn[aria-expanded="true"] .lang-arrow {
+    transform: rotate(180deg);
+  }
+
+  .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 180px;
+    background: #252b3e !important;
+    border: 1px solid #374151 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 9999;
+    overflow: hidden;
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-family: system-ui, -apple-system, sans-serif !important;
+    text-align: left;
+  }
+
+  .lang-option:last-child {
+    border-bottom: none !important;
+  }
+
+  .lang-option:hover {
+    background: #ff4438 !important;
+    color: #fff !important;
+  }
+
+  .lang-option.active {
+    background: rgba(255, 68, 56, 0.15) !important;
+    color: #ff4438 !important;
+  }
+
+  .lang-option.active .lang-check {
+    opacity: 1;
+  }
+
+  .lang-option-flag {
+    font-size: 18px;
+  }
+
+  .lang-option-name {
+    flex: 1;
+  }
+
+  .lang-check {
+    opacity: 0;
+    font-weight: bold;
+  }
+
+  @media (max-width: 640px) {
+    .lang-switcher {
+      display: none;
+    }
+  }
+</style>
