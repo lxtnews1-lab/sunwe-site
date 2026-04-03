@@ -1,206 +1,82 @@
----
-// Language Switcher - Simple & Robust Version
----
-
-<div class="lang-switcher" id="langSwitcher" translate="no">
-  <button class="lang-btn" id="langBtn" type="button" translate="no">
-    <span class="lang-flag" id="currentFlag" translate="no">🇬🇧</span>
-    <span class="lang-name" id="currentName" translate="no">English</span>
-    <svg class="lang-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 8L1 3h10z" fill="currentColor"/>
-    </svg>
+<div class="lang-switcher" id="langSwitcher">
+  <button class="lang-btn" id="langBtn">
+    <span id="currentLangFlag">🇬🇧</span>
+    <span id="currentLangName">EN</span>
+    <span class="lang-arrow">▾</span>
   </button>
-  <div class="lang-dropdown" id="langDropdown" translate="no">
-    <button class="lang-option" data-lang="en" type="button" translate="no">
-      <span class="lang-option-flag">🇬🇧</span>
-      <span class="lang-option-name">English</span>
-      <span class="lang-check">✓</span>
-    </button>
-    <button class="lang-option" data-lang="zh-CN" type="button" translate="no">
-      <span class="lang-option-flag">🇨🇳</span>
-      <span class="lang-option-name">中文</span>
-      <span class="lang-check">✓</span>
-    </button>
-    <button class="lang-option" data-lang="es" type="button" translate="no">
-      <span class="lang-option-flag">🇪🇸</span>
-      <span class="lang-option-name">Español</span>
-      <span class="lang-check">✓</span>
-    </button>
-    <button class="lang-option" data-lang="ar" type="button" translate="no">
-      <span class="lang-option-flag">🇸🇦</span>
-      <span class="lang-option-name">العربية</span>
-      <span class="lang-check">✓</span>
-    </button>
-    <button class="lang-option" data-lang="fr" type="button" translate="no">
-      <span class="lang-option-flag">🇫🇷</span>
-      <span class="lang-option-name">Français</span>
-      <span class="lang-check">✓</span>
-    </button>
-    <button class="lang-option" data-lang="ru" type="button" translate="no">
-      <span class="lang-option-flag">🇷🇺</span>
-      <span class="lang-option-name">Русский</span>
-      <span class="lang-check">✓</span>
-    </button>
+  <div class="lang-menu" id="langMenu">
+    <div class="lang-item" data-lang="en" data-flag="🇬🇧" data-name="EN">🇬🇧 English</div>
+    <div class="lang-item" data-lang="zh-CN" data-flag="🇨🇳" data-name="中文">🇨🇳 中文</div>
+    <div class="lang-item" data-lang="es" data-flag="🇪🇸" data-name="ES">🇪🇸 Español</div>
+    <div class="lang-item" data-lang="ar" data-flag="🇸🇦" data-name="AR">🇸🇦 العربية</div>
+    <div class="lang-item" data-lang="fr" data-flag="🇫🇷" data-name="FR">🇫🇷 Français</div>
+    <div class="lang-item" data-lang="ru" data-flag="🇷🇺" data-name="RU">🇷🇺 Русский</div>
   </div>
 </div>
 
-<script is:inline>
-// Simple language switcher
-(function() {
-  var languages = {
-    'en': ['🇬🇧', 'English'],
-    'zh-CN': ['🇨🇳', '中文'],
-    'es': ['🇪🇸', 'Español'],
-    'ar': ['🇸🇦', 'العربية'],
-    'fr': ['🇫🇷', 'Français'],
-    'ru': ['🇷🇺', 'Русский']
-  };
-  
-  var current = 'en';
-  var open = false;
-  
-  // Get elements
-  var btn = document.getElementById('langBtn');
-  var dropdown = document.getElementById('langDropdown');
-  var flag = document.getElementById('currentFlag');
-  var name = document.getElementById('currentName');
-  var switcher = document.getElementById('langSwitcher');
-  
-  if (!btn || !dropdown) {
-    console.error('Language switcher elements not found');
-    return;
-  }
-  
-  // Update display
-  function update(lang) {
-    if (!languages[lang]) lang = 'en';
-    current = lang;
-    
-    var data = languages[lang];
-    flag.textContent = data[0];
-    name.textContent = data[1];
-    
-    // Update active state
-    var options = switcher.querySelectorAll('.lang-option');
-    for (var i = 0; i < options.length; i++) {
-      var opt = options[i];
-      var optLang = opt.getAttribute('data-lang');
-      if (optLang === lang) {
-        opt.classList.add('active');
-      } else {
-        opt.classList.remove('active');
-      }
-    }
-    
-    // Save preference
-    localStorage.setItem('preferred-lang', lang);
-  }
-  
-  // Toggle dropdown
-  function toggle() {
-    open = !open;
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    
-    if (open) {
-      dropdown.style.opacity = '1';
-      dropdown.style.visibility = 'visible';
-      dropdown.style.transform = 'translateY(0)';
-    } else {
-      dropdown.style.opacity = '0';
-      dropdown.style.visibility = 'hidden';
-      dropdown.style.transform = 'translateY(-10px)';
-    }
-  }
-  
-  // Get Google Translate select
-  function getGT() {
-    return document.querySelector('.goog-te-combo');
-  }
-  
-  // Switch language
-  function switchTo(lang) {
-    if (lang === current) {
-      toggle();
-      return;
-    }
-    
-    var gt = getGT();
-    if (!gt) {
-      console.log('Google Translate not ready');
-      return;
-    }
-    
-    // Switch
-    gt.value = lang;
-    gt.dispatchEvent(new Event('change'));
-    
-    // Update UI
-    update(lang);
-    toggle();
-    
-    console.log('Switched to:', lang);
-  }
-  
-  // Button click
-  btn.onclick = function(e) {
+<!-- 关键：不用 onclick，改用 addEventListener，解决 Astro 模块作用域问题 -->
+<script>
+  const btn = document.getElementById('langBtn');
+  const menu = document.getElementById('langMenu');
+  const flagEl = document.getElementById('currentLangFlag');
+  const nameEl = document.getElementById('currentLangName');
+
+  // 恢复上次选择的语言显示
+  const savedFlag = localStorage.getItem('siteLangFlag');
+  const savedName = localStorage.getItem('siteLangName');
+  if (savedFlag) flagEl.textContent = savedFlag;
+  if (savedName) nameEl.textContent = savedName;
+
+  // 点击按钮开关菜单
+  btn.addEventListener('click', function(e) {
     e.stopPropagation();
-    toggle();
-  };
-  
-  // Option clicks
-  var options = switcher.querySelectorAll('.lang-option');
-  for (var i = 0; i < options.length; i++) {
-    options[i].onclick = function(e) {
-      e.stopPropagation();
-      var lang = this.getAttribute('data-lang');
-      switchTo(lang);
-    };
-  }
-  
-  // Close on outside click
-  document.addEventListener('click', function(e) {
-    if (open && !switcher.contains(e.target)) {
-      toggle();
-    }
+    menu.classList.toggle('is-open');
   });
-  
-  // Close on escape
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && open) {
-      toggle();
-    }
+
+  // 点击每个语言选项
+  document.querySelectorAll('.lang-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      const langCode = this.dataset.lang;
+      const flag = this.dataset.flag;
+      const name = this.dataset.name;
+
+      // 更新按钮显示
+      flagEl.textContent = flag;
+      nameEl.textContent = name;
+      menu.classList.remove('is-open');
+
+      // 保存选择
+      localStorage.setItem('siteLang', langCode);
+      localStorage.setItem('siteLangFlag', flag);
+      localStorage.setItem('siteLangName', name);
+
+      if (langCode === 'en') {
+        // 切回英文：清除 cookie 刷新
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + location.hostname;
+        location.reload();
+        return;
+      }
+
+      // 触发 Google Translate，最多重试 10 次
+      let attempts = 10;
+      function tryTranslate() {
+        const select = document.querySelector('.goog-te-combo');
+        if (select) {
+          select.value = langCode;
+          select.dispatchEvent(new Event('change'));
+        } else if (attempts-- > 0) {
+          setTimeout(tryTranslate, 500);
+        }
+      }
+      tryTranslate();
+    });
   });
-  
-  // Initialize - wait for Google Translate
-  function init() {
-    var gt = getGT();
-    if (gt && gt.value) {
-      // Use Google Translate's current value
-      update(gt.value);
-    } else {
-      // Fallback to localStorage or default
-      var saved = localStorage.getItem('preferred-lang') || 'en';
-      update(saved);
-    }
-  }
-  
-  // Try immediately
-  init();
-  
-  // Retry after delay if GT not ready
-  setTimeout(init, 1000);
-  setTimeout(init, 2000);
-  
-  // Continuous sync
-  setInterval(function() {
-    var gt = getGT();
-    if (gt && gt.value && gt.value !== current) {
-      update(gt.value);
-    }
-  }, 500);
-  
-  console.log('Language switcher initialized');
-})();
+
+  // 点击页面其他地方关闭菜单
+  document.addEventListener('click', function() {
+    menu.classList.remove('is-open');
+  });
 </script>
 
 <style>
@@ -213,110 +89,56 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    border-radius: 8px !important;
-    color: #fff !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    font-family: inherit !important;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
   .lang-btn:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-    border-color: rgba(255, 255, 255, 0.5) !important;
-  }
-
-  .lang-btn[aria-expanded="true"] {
-    background: rgba(255, 255, 255, 0.2) !important;
-    border-color: #ff4438 !important;
-  }
-
-  .lang-flag {
-    font-size: 16px;
-  }
-
-  .lang-name {
-    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.2);
   }
 
   .lang-arrow {
-    transition: transform 0.2s;
+    font-size: 10px;
     opacity: 0.7;
+    transition: transform 0.2s;
   }
 
-  .lang-btn[aria-expanded="true"] .lang-arrow {
-    transform: rotate(180deg);
-  }
-
-  .lang-dropdown {
+  .lang-menu {
+    display: none;
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    min-width: 180px;
-    background: #252b3e !important;
-    border: 1px solid #374151 !important;
-    border-radius: 10px !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.2s ease;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 6px 0;
+    min-width: 150px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     z-index: 9999;
-    overflow: hidden;
   }
 
-  .lang-option {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 12px 16px;
-    background: transparent !important;
-    border: none !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-    color: #fff !important;
-    cursor: pointer !important;
-    font-size: 14px !important;
-    font-family: inherit !important;
-    text-align: left;
+  .lang-menu.is-open {
+    display: block;
   }
 
-  .lang-option:last-child {
-    border-bottom: none !important;
+  .lang-item {
+    padding: 10px 16px;
+    color: #e2e8f0;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
   }
 
-  .lang-option:hover {
-    background: #ff4438 !important;
-  }
-
-  .lang-option.active {
-    background: rgba(255, 68, 56, 0.2) !important;
-    color: #ff4438 !important;
-  }
-
-  .lang-option.active .lang-check {
-    opacity: 1;
-  }
-
-  .lang-option-flag {
-    font-size: 18px;
-  }
-
-  .lang-option-name {
-    flex: 1;
-  }
-
-  .lang-check {
-    opacity: 0;
-    font-weight: bold;
-  }
-
-  @media (max-width: 640px) {
-    .lang-switcher {
-      display: none;
-    }
+  .lang-item:hover {
+    background: rgba(249, 115, 22, 0.2);
+    color: #f97316;
   }
 </style>
