@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -253,7 +254,16 @@ const combinedSchema = [websiteSchema, localBusinessSchema];
           <div class="home-series">
             {productSeries.map((s) => (
               <a class="home-series__card" href="/products" aria-label={`Browse ${s.title}`}>
-                <img src={s.image} alt={`${s.title} - ${s.description}`} loading="lazy" width="600" height="400" />
+                <Image 
+                src={s.image} 
+                alt={`${s.title} - ${s.description}`} 
+                width={665} 
+                height={665} 
+                format="webp"
+                quality={82}
+                loading="lazy"
+                decoding="async"
+              />
                 <div class="home-series__grad"></div>
                 <div class="home-series__body">
                   <h3>{s.title}</h3>

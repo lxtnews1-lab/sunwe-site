@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import type { Product } from '../lib/woocommerce';
 
 interface Props {
@@ -6,9 +7,7 @@ interface Props {
 }
 
 const { product } = Astro.props;
-const originalImg = product.images[0]?.src;
-// Use WebP version if available
-const img = originalImg ? `${originalImg}.webp` : null;
+const img = product.images[0]?.src;
 const alt = product.images[0]?.alt || product.name;
 
 const stripTags = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -21,7 +20,16 @@ const excerpt =
 <article class="pcard" data-category-slugs={product.categories.map((c) => c.slug).join(',')}>
   <a class="pcard__media" href={`/products/${product.id}`}>
     {img ? (
-      <img src={img} alt={alt} width="640" height="400" loading="lazy" />
+      <Image 
+        src={img} 
+        alt={alt} 
+        width={665} 
+        height={665} 
+        format="webp"
+        quality={82}
+        loading="lazy"
+        decoding="async"
+      />
     ) : (
       <div class="pcard__ph" role="img" aria-label={alt} />
     )}

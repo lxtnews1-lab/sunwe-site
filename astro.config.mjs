@@ -5,6 +5,11 @@ import critters from 'critters';
 export default defineConfig({
   site: 'https://sunwevehicle.com',
   output: 'static',
+  image: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'wp.sunwevehicle.com' }
+    ]
+  },
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/admin/'),
