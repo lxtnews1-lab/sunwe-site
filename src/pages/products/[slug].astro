@@ -3,16 +3,44 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
-import { getAllProductIds, getProduct } from '../../lib/woocommerce';
+import { getAllProducts, getAllProductSlugs } from '../../lib/woocommerce';
 
+// 为所有产品生成静态路径
 export async function getStaticPaths() {
-  const ids = await getAllProductIds().catch(() => [] as number[]);
-  return ids.map((id) => ({ params: { id: String(id) } }));
+  // getAllProductSlugs 返回清理后的 slug 和原始 slug（如果不同）
+  const slugs = await getAllProductSlugs().catch(() => []);
+  
+  return slugs.map((slug) => ({ params: { slug } }));
 }
 
-const { id } = Astro.params;
-const numericId = Number(id);
-const product = await getProduct(numericId);
+const { slug } = Astro.params;
+
+// 获取所有产品
+const allProducts = await getAllProducts().catch(() => []);
+
+// 查找匹配的产品（支持清理后的 slug 和原始 slug）
+function findProduct(inputSlug: string) {
+  // 首先尝试直接匹配
+  let product = allProducts.find(p => p.slug === inputSlug);
+  if (product) return product;
+  
+  // 然后尝试清理输入的 slug 后匹配
+  const cleanInput = inputSlug
+    .replace(/[³²¹⁴⁵⁶⁷⁸⁹⁰]/g, (c) => {
+      const map: Record<string, string> = {
+        '³': '3', '²': '2', '¹': '1', '⁴': '4', '⁵': '5',
+        '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁰': '0'
+      };
+      return map[c] || c;
+    });
+  
+  product = allProducts.find(p => p.slug === cleanInput);
+  if (product) return product;
+  
+  return null;
+}
+
+const product = slug ? findProduct(slug) : null;
 
 // 如果产品不存在，显示 404 页面
 if (!product) {
@@ -131,7 +159,7 @@ const breadcrumbSchema = {
       "@type": "ListItem",
       "position": 3,
       "name": product.name,
-      "item": `https://sunwevehicle.com/products/${product.id}`
+      "item": `https://sunwevehicle.com/products/${product.slug}`
     }
   ]
 };
@@ -141,7 +169,7 @@ const combinedSchema = [productSchema, breadcrumbSchema];
 const stripTags = (html: string) => html.replace(/<[^>]+>/g, '').trim();
 ---
 
-<BaseLayout title={title} description={description} canonicalPath={`/products/${product.id}`} ogImage={ogImage} schema={combinedSchema}>
+<BaseLayout title={title} description={description} canonicalPath={`/products/${product.slug}`} ogImage={ogImage} schema={combinedSchema}>
   <div class="page">
     <Nav />
     <main class="main">

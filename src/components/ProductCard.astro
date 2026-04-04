@@ -18,7 +18,7 @@ const excerpt =
 ---
 
 <article class="pcard" data-category-slugs={product.categories.map((c) => c.slug).join(',')}>
-  <a class="pcard__media" href={`/products/${product.id}`}>
+  <a class="pcard__media" href={`/products/${product.slug}`}>
     {img ? (
       <Image 
         src={img} 
@@ -36,10 +36,10 @@ const excerpt =
   </a>
   <div class="pcard__body">
     <h3 class="pcard__title">
-      <a href={`/products/${product.id}`}>{product.name}</a>
+      <a href={`/products/${product.slug}`}>{product.name}</a>
     </h3>
     <p class="pcard__excerpt">{excerpt}</p>
-    <a class="btn btn--sw-gradient btn--block" href={`/products/${product.id}`}>Inquire Now</a>
+    <a class="btn btn--sw-gradient btn--block" href={`/products/${product.slug}`}>Inquire Now</a>
   </div>
 </article>
 

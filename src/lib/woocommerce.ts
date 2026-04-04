@@ -94,11 +94,45 @@ interface RawWooProduct {
   categories: WooProductCategoryRef[];
 }
 
+// 清理 slug，将特殊字符替换为安全的 URL 字符
+function sanitizeSlug(slug: string): string {
+  // 首先解码 URL 编码的字符
+  let decoded = slug;
+  try {
+    decoded = decodeURIComponent(slug);
+  } catch {
+    // 解码失败，使用原始 slug
+  }
+  
+  return decoded
+    .replace(/³/g, '3')  // 上标3替换为普通3
+    .replace(/²/g, '2')  // 上标2替换为普通2
+    .replace(/[¹⁴⁵⁶⁷⁸⁹⁰]/g, (c) => {
+      // 其他上标数字
+      const map: Record<string, string> = {
+        '¹': '1', '⁴': '4', '⁵': '5', '⁶': '6',
+        '⁷': '7', '⁸': '8', '⁹': '9', '⁰': '0'
+      };
+      return map[c] || c;
+    })
+    .replace(/[^a-zA-Z0-9-_]/g, (c) => {
+      // 其他非 ASCII 字符尝试转义
+      try {
+        const encoded = encodeURIComponent(c);
+        // 如果编码后是 %xx%xx 形式，替换为 -
+        if (encoded.length > 3) return '-';
+        return c;
+      } catch {
+        return '-';
+      }
+    });
+}
+
 function stripProduct(raw: RawWooProduct): Product {
   return {
     id: raw.id,
     name: raw.name,
-    slug: raw.slug,
+    slug: sanitizeSlug(raw.slug),
     short_description: raw.short_description ?? '',
     description: raw.description ?? '',
     images: Array.isArray(raw.images) ? raw.images : [],
@@ -183,4 +217,66 @@ export async function getAllProductIds(): Promise<number[]> {
     page += 1;
   }
   return ids;
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  try {
+    // 先尝试直接匹配
+    let batch = await wcFetch<RawWooProduct[]>('/products', {
+      slug,
+      status: 'publish',
+      per_page: 1,
+    });
+    // 如果没找到，尝试匹配清理后的版本
+    if (batch.length === 0) {
+      batch = await wcFetch<RawWooProduct[]>('/products', {
+        slug: sanitizeSlug(slug),
+        status: 'publish',
+        per_page: 1,
+      });
+    }
+    if (batch.length === 0) return null;
+    return stripProduct(batch[0]);
+  } catch {
+    return null;
+  }
+}
+
+export async function getAllProductSlugs(): Promise<string[]> {
+  // 直接获取原始 slug，并返回所有可能的变体
+  const slugs: string[] = [];
+  let page = 1;
+  const perPage = 100;
+  for (;;) {
+    const batch = await wcFetch<Pick<RawWooProduct, 'slug'>[]>('/products', {
+      per_page: perPage,
+      page,
+      status: 'publish',
+      _fields: 'slug',
+    });
+    for (const p of batch) {
+      const rawSlug = p.slug;
+      const cleanSlug = sanitizeSlug(rawSlug);
+      
+      // 添加清理后的 slug（主要路径）
+      slugs.push(cleanSlug);
+      
+      // 如果原始 slug 与清理后的不同
+      if (rawSlug !== cleanSlug) {
+        slugs.push(rawSlug);
+        // 同时添加解码后的版本（如果 API 返回的是编码后的）
+        try {
+          const decodedSlug = decodeURIComponent(rawSlug);
+          if (decodedSlug !== rawSlug && !slugs.includes(decodedSlug)) {
+            slugs.push(decodedSlug);
+          }
+        } catch {
+          // 解码失败，忽略
+        }
+      }
+    }
+    if (batch.length < perPage) break;
+    page += 1;
+  }
+  return [...new Set(slugs)];
 }
