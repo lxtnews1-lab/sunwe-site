@@ -49,6 +49,11 @@
       localStorage.setItem('siteLangFlag', flag);
       localStorage.setItem('siteLangName', name);
 
+      // 确保 Google Translate 已加载
+      if (window.loadGoogleTranslate) {
+        window.loadGoogleTranslate();
+      }
+
       if (langCode === 'en') {
         // 切回英文：清除 cookie 刷新
         document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
@@ -57,8 +62,8 @@
         return;
       }
 
-      // 触发 Google Translate，最多重试 10 次
-      let attempts = 10;
+      // 触发 Google Translate，最多重试 15 次（给加载留更多时间）
+      let attempts = 15;
       function tryTranslate() {
         const select = document.querySelector('.goog-te-combo');
         if (select) {

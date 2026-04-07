@@ -166,15 +166,23 @@ const finalSchema = schema || defaultSchema;
     
     <div id="google_translate_element" style="display:none"></div>
     <script type="text/javascript">
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-          pageLanguage: 'en',
-          includedLanguages: 'en,zh-CN,es,ar,fr,ru',
-          autoDisplay: false
-        }, 'google_translate_element');
-      }
+      // 延迟加载 Google Translate，减少初始页面负担
+      window.loadGoogleTranslate = function() {
+        if (window.googleTranslateElementInit) return;
+        window.googleTranslateElementInit = function() {
+          new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,es,ar,fr,ru',
+            autoDisplay: false
+          }, 'google_translate_element');
+        };
+        var script = document.createElement('script');
+        script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        document.body.appendChild(script);
+      };
+      // 5秒后自动预加载（用户可能很快会用到）
+      setTimeout(window.loadGoogleTranslate, 5000);
     </script>
-    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" is:inline></script>
     
     <!-- Disable right-click on images -->
     <script is:inline>
