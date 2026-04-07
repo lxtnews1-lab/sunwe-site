@@ -32,7 +32,7 @@ const dateStr = date.toLocaleDateString('en-US', {
       <a href={`/blog/${post.slug}`}>{title}</a>
     </h3>
     <p class="bcard__excerpt">{excerpt}</p>
-    <a class="bcard__more" href={`/blog/${post.slug}`}>Read more</a>
+    <a class="bcard__more" href={`/blog/${post.slug}`} aria-label={`Continue reading: ${title}`}>Continue reading →</a>
   </div>
 </article>
 
