@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' translate.google.com translate.googleapis.com www.youtube.com www.googletagmanager.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: https: wp.sunwevehicle.com img.youtube.com; font-src 'self' fonts.gstatic.com; frame-src 'self' www.youtube.com; connect-src 'self' translate.googleapis.com;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' translate.google.com translate.googleapis.com www.youtube.com www.googletagmanager.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com translate.googleapis.com www.gstatic.com; img-src 'self' data: https: wp.sunwevehicle.com img.youtube.com; font-src 'self' fonts.gstatic.com; frame-src 'self' www.youtube.com; connect-src 'self' translate.googleapis.com;"
         },
         {
           "key": "Strict-Transport-Security",
