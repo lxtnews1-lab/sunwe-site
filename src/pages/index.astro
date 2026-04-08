@@ -202,13 +202,13 @@ const combinedSchema = [websiteSchema, localBusinessSchema];
             <div class="home-video" data-youtube-id="DRZiD8VU4bA">
               <div class="home-video__placeholder" onclick="var iframe=this.nextElementSibling;iframe.src=iframe.dataset.src;iframe.style.display='block';this.style.display='none'">
                 <img 
-                  src="https://img.youtube.com/vi/DRZiD8VU4bA/sddefault.jpg" 
+                  src="https://img.youtube.com/vi/DRZiD8VU4bA/maxresdefault.jpg" 
                   alt="SUNWE VEHICLE Factory Tour - Click to play"
                   width="1280"
                   height="720"
                   fetchpriority="high"
                   decoding="async"
-                  onerror="this.onerror=null;this.src='https://img.youtube.com/vi/DRZiD8VU4bA/hqdefault.jpg';"
+                  onerror="this.onerror=null;this.src='https://img.youtube.com/vi/DRZiD8VU4bA/sddefault.jpg';"
                 />
                 <div class="home-video__play-btn" aria-hidden="true">▶</div>
               </div>
@@ -564,6 +564,7 @@ const combinedSchema = [websiteSchema, localBusinessSchema];
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     transition: transform 0.3s ease;
   }
 
